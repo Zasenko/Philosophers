@@ -1,8 +1,8 @@
-NAME = pholi
+NAME = philo
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
-SRC = main.c
+SRC = main.c tests.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)

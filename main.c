@@ -1,7 +1,7 @@
-#include <unistd.h>
+#include "philo.h"
 
 int main(void)
 {
-    write(1, "Hello, world!\n", 14);
+    tests();
     return (0);
 }
