@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2024/12/30 11:08:41 by dzasenko         ###   ########.fr       */
+/*   Updated: 2024/12/30 14:56:18 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,28 @@
 # include <pthread.h>
 # include <sys/time.h>
 
-void	tests(void);
+typedef struct s_philo
+{
+	int	i;
+	int	time_to_die;
+	int	time_to_eat;
+	int	time_to_sleep;
+	int	must_eat_times;
+	//void *result;
+	pthread_t thread;
+}	t_philo;
+
+typedef struct s_prog
+{
+	int 	number_of_philosophers;
+	int		time_to_die;
+	int		time_to_eat;
+	int		time_to_sleep;
+	int		must_eat_times;
+	t_philo	**philos;
+}	t_prog;
+
+int		parse(t_prog *prog, int argc, char **argv);
+void	tests(void);//todo delete
 
 #endif
