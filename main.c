@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2024/12/30 15:15:19 by dzasenko         ###   ########.fr       */
+/*   Updated: 2024/12/30 15:22:47 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,17 @@ void	*create_philosopher(void *arg)
 	// 	perror("malloc");
     //     return NULL;	
 	// }
-	printf("%d philosopher created\n", philo->i);
-
+	printf("timestamp_in_ms %d has taken a fork\n", philo->i);
+	printf("timestamp_in_ms %d is eating\n", philo->i);
 	sleep(2);
-	printf("%d philosopher slept\n", philo->i);
+
+	printf("timestamp_in_ms %d is sleeping\n", philo->i);
+	sleep(1);
+
+	printf("timestamp_in_ms %d is thinking\n", philo->i);
+	sleep(2);
+
+	printf("timestamp_in_ms %d died\n", philo->i);
 	return (NULL);
 }
 
