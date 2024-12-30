@@ -17,6 +17,8 @@ void	*create_philosopher(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	if (!philo)
+		return (NULL);
 	// (void)arg;
 	// int *result = malloc(sizeof(int));
 	// if (!result)
@@ -24,17 +26,40 @@ void	*create_philosopher(void *arg)
 	// 	perror("malloc");
     //     return NULL;	
 	// }
-	printf("timestamp_in_ms %d has taken a fork\n", philo->i);
-	printf("timestamp_in_ms %d is eating\n", philo->i);
-	sleep(2);
 
-	printf("timestamp_in_ms %d is sleeping\n", philo->i);
-	sleep(1);
+	// When a philosopher has finished eating, they put their forks back on the table and
+	// start sleeping.Once awake, they start thinking again.The simulation stops when
+	// a philosopher dies of starvation.
 
-	printf("timestamp_in_ms %d is thinking\n", philo->i);
-	sleep(2);
-
-	printf("timestamp_in_ms %d died\n", philo->i);
+	if (philo->must_eat_times > 0) // TODO!!!! must_eat_times > 0    ???????
+	{
+		while (philo->must_eat_times > 0)
+		{
+			printf("timestamp_in_ms %d has taken a fork\n", philo->i);
+			printf("timestamp_in_ms %d is eating\n", philo->i);
+			usleep(philo->time_to_eat);
+			printf("timestamp_in_ms %d is sleeping\n", philo->i);
+			usleep(philo->time_to_sleep);
+			printf("timestamp_in_ms %d is thinking\n", philo->i);
+			philo->must_eat_times--;
+		}
+		return ((void *)"1");
+	}
+	else
+	{
+		while(1)
+		{
+			printf("timestamp_in_ms %d has taken a fork\n", philo->i);
+			printf("timestamp_in_ms %d is eating\n", philo->i);
+			usleep(philo->time_to_eat);
+			printf("timestamp_in_ms %d is sleeping\n", philo->i);
+			usleep(philo->time_to_sleep);
+			printf("timestamp_in_ms %d is thinking\n", philo->i);
+			return ((void *)"0");
+		}
+		return ((void *)"0");
+	}
+	// printf("timestamp_in_ms %d died\n", philo->i);
 	return (NULL);
 }
 
@@ -53,10 +78,8 @@ int	wait_results(t_philo *philo)
 	}
 	else
 	{
-		printf("Result %d not null\n", philo->i);
+		printf("Result %d: %s\n", philo->i, (char *)result);
 	}
-	
-	
 	return (1);
 }
 
@@ -81,7 +104,7 @@ int	main(int argc, char **argv)
 	{
 		pthread_t thread;
     	printf("creating philosopher: %d\n", prog.philos[i]->i);
-		if (pthread_create(&thread, NULL, create_philosopher, (void *)prog.philos[i]))
+		if (pthread_create(&thread, NULL, create_philosopher, (void *)prog.philos[i]) != 0)
 		{
 			perror("pthread_create");
 			return (EXIT_FAILURE);
@@ -101,9 +124,9 @@ int	main(int argc, char **argv)
 			//return (EXIT_FAILURE);
 
 		}
-		else
+		else if (wait_results(prog.philos[i]) == 0)
 		{
-			printf("wait_results OK:  philosopher: %d\n", prog.philos[i]->i);
+			printf("Philosopher: %d dead!!!!!\n", prog.philos[i]->i);
 
 		}
 		i++;

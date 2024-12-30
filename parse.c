@@ -49,7 +49,12 @@ int parse(t_prog *prog, int argc, char **argv)
 	//TODO!!! ?? why array?
 	if (argc == 6)
 	{
-		prog->must_eat_times = atoi(argv[5]);//todo atoi		
+		prog->must_eat_times = atoi(argv[5]);//todo atoi
+		if (prog->must_eat_times < 1)// TODO!!!! must_eat_times > 0 ???????
+		{
+			printf("number of times each philosopher must eat should be > 0\n");
+			return (-1);
+		}
 	}
 
 
@@ -79,8 +84,8 @@ int parse(t_prog *prog, int argc, char **argv)
 		philos[i]->time_to_die = prog->time_to_die;
 		philos[i]->time_to_eat = prog->time_to_eat;
 		philos[i]->time_to_sleep = prog->time_to_sleep;
-		philos[i]->result = NULL;
-		philos[i]->thread = -1;
+	//	philos[i]->result = NULL;
+		//philos[i]->thread = -1; ??????? on mac error
 		philos[i]->i = i + 1;
 		i++;
 	}

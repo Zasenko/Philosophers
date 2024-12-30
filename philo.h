@@ -28,7 +28,7 @@ typedef struct s_philo
 	int	time_to_eat;
 	int	time_to_sleep;
 	int	must_eat_times;
-	void *result;
+	//void *result;
 	pthread_t thread;
 }	t_philo;
 

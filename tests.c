@@ -13,12 +13,12 @@ void test_pthread_detach(void);
 pthread_mutex_t lock;
 int counter = 0;
 
-void tests(void)
+int main(void)
 {
     //test_kill();
-    //test_pthread_create();
+    test_pthread_create();
     //test_pthread_detach();
-    mutex_test();
+    //mutex_test();
     printf("END\n");
 }
 
@@ -213,7 +213,8 @@ void *get_time(void *arg)
     // printf("get_time Конец паузы\n");
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    printf("get_time Секунды: %ld, Микросекунды: %ld\n", tv.tv_sec, tv.tv_usec);
+ //   printf("get_time Секунды: %ld, Микросекунды: %ld\n", tv.tv_sec, tv.tv_usec);
+    printf("get_time Секунды: %ld, Микросекунды: %d\n", tv.tv_sec, tv.tv_usec);
     printf("-- get_time END --\n");
     return NULL;
 }
