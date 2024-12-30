@@ -35,13 +35,25 @@ void	*create_philosopher(void *arg)
 	{
 		while (philo->must_eat_times > 0)
 		{
-			printf("timestamp_in_ms %d has taken a fork\n", philo->i);
-			printf("timestamp_in_ms %d is eating\n", philo->i);
+
+			pthread_mutex_lock(philo->fork1);
+			printf("Phil %d has taken a fork 1\n", philo->i);
+			pthread_mutex_lock(philo->fork2);
+			printf("Phil %d has taken a fork 2\n", philo->i);
+			printf("Phil %d is eating\n", philo->i);
 			usleep(philo->time_to_eat);
-			printf("timestamp_in_ms %d is sleeping\n", philo->i);
+
+			pthread_mutex_unlock(philo->fork1);
+			printf("Phil %d has put a fork1\n", philo->i);
+
+			pthread_mutex_unlock(philo->fork2);
+			printf("Phil %d has put a fork2\n", philo->i);
+
+			printf("Phil %d is sleeping\n", philo->i);
 			usleep(philo->time_to_sleep);
-			printf("timestamp_in_ms %d is thinking\n", philo->i);
+			printf("Phil %d is thinking\n", philo->i);
 			philo->must_eat_times--;
+			printf("Phil %d must_eat_times: %d\n", philo->i, philo->must_eat_times);
 		}
 		return ((void *)"1");
 	}
@@ -94,6 +106,7 @@ int	main(int argc, char **argv)
 	prog.time_to_eat = 0;
 	prog.time_to_sleep = 0;
 	prog.philos = NULL;
+	prog.forks = NULL;
 
 	if (parse(&prog, argc, argv) == -1)
 	{
@@ -122,18 +135,42 @@ int	main(int argc, char **argv)
 			printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
 
 			//return (EXIT_FAILURE);
-
 		}
 		else if (wait_results(prog.philos[i]) == 0)
 		{
 			printf("Philosopher: %d dead!!!!!\n", prog.philos[i]->i);
-
 		}
 		i++;
 	}
 		
 	printf("END\n");
 	//free prog
+
+	if (prog.forks)
+	{
+		int i = 0;
+		while (prog.forks[i])
+		{
+			free(prog.forks[i]);
+			prog.forks[i] = NULL;
+			i++;
+		}
+		free(prog.forks);
+		prog.forks = NULL;
+	}
+	if (prog.philos)
+	{
+		int i = 0;
+		while (prog.philos[i])
+		{
+			free(prog.philos[i]);
+			prog.philos[i] = NULL;
+			i++;
+		}
+		free(prog.philos);
+		prog.philos = NULL;
+	}
+
 	return (EXIT_SUCCESS);
 }
 
