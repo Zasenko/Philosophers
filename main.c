@@ -6,50 +6,104 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2024/12/30 12:19:25 by dzasenko         ###   ########.fr       */
+/*   Updated: 2024/12/30 15:15:19 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+void	*create_philosopher(void *arg)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)arg;
+	// (void)arg;
+	// int *result = malloc(sizeof(int));
+	// if (!result)
+	// {
+	// 	perror("malloc");
+    //     return NULL;	
+	// }
+	printf("%d philosopher created\n", philo->i);
+
+	sleep(2);
+	printf("%d philosopher slept\n", philo->i);
+	return (NULL);
+}
+
+int	wait_results(t_philo *philo)
+{
+	void *result;
+	
+	if (!philo)
+		return (printf("ERROR wait_results: !philo\n"), -1);
+	
+	pthread_join(philo->thread, &result);
+	if (result == NULL)
+	{
+		printf("Result %d NULL\n", philo->i);
+		return (-1);
+	}
+	else
+	{
+		printf("Result %d not null\n", philo->i);
+	}
+	
+	
+	return (1);
+}
+
 int	main(int argc, char **argv)
 {
+	
 	t_prog prog;
-	
-	
-	if (argc < 5 || argc  > 6)
+
+	prog.number_of_philosophers = 0;
+	prog.time_to_die = 0;
+	prog.must_eat_times = -1;
+	prog.time_to_eat = 0;
+	prog.time_to_sleep = 0;
+	prog.philos = NULL;
+
+	if (parse(&prog, argc, argv) == -1)
 	{
-		write(1, "Wrong argumnts count\n", 21);
 		return (EXIT_FAILURE);
 	}
-	
-	// The number of philosophers and also the number of forks.
-	int number_of_philosophers = atoi(argv[1]);	//todo atoi
-	if (number_of_philosophers < 1)
+	int i = 0;
+	while (prog.philos[i])
 	{
-		write(1, "Wrong philosophers count\n", 21);
-		return (EXIT_FAILURE);
+		pthread_t thread;
+    	printf("creating philosopher: %d\n", prog.philos[i]->i);
+		if (pthread_create(&thread, NULL, create_philosopher, (void *)prog.philos[i]))
+		{
+			perror("pthread_create");
+			return (EXIT_FAILURE);
+    	}
+		prog.philos[i]->thread = thread;
+		i++;
 	}
 
-	// time_to_die
-	// If a philosopher didn’t start eating time_to_die milliseconds since
-	// the beginning of their last meal or the beginning of the simulation, they die.
-	prog.time_to_die = atoi(argv[2]);//todo atoi
-
-	//time_to_eat
-	prog.time_to_eat = atoi(argv[3]);//todo atoi
-
-	//time_to_sleep
-	prog.time_to_sleep = atoi(argv[4]);//todo atoi
+	i = 0;
 	
-	//[number_of_times_each_philosopher_must_eat]
-	//TODO!!! ?? why array?
-	prog.number_of_times_each_philosopher_must_eat = -1;
-	if (argc == 6)
+	while (prog.philos[i])
 	{
-		prog.number_of_times_each_philosopher_must_eat = atoi(argv[5]);//todo atoi		
-	}
+		if (wait_results(prog.philos[i]) == -1)
+		{
+			printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
 
+			//return (EXIT_FAILURE);
+
+		}
+		else
+		{
+			printf("wait_results OK:  philosopher: %d\n", prog.philos[i]->i);
+
+		}
+		i++;
+	}
+		
+	printf("END\n");
+	//free prog
 	return (EXIT_SUCCESS);
 }
 

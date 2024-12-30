@@ -213,7 +213,7 @@ void *get_time(void *arg)
     // printf("get_time Конец паузы\n");
     struct timeval tv;
     gettimeofday(&tv, NULL);
-    printf("get_time Секунды: %ld, Микросекунды: %d\n", tv.tv_sec, tv.tv_usec);
+    printf("get_time Секунды: %ld, Микросекунды: %ld\n", tv.tv_sec, tv.tv_usec);
     printf("-- get_time END --\n");
     return NULL;
 }
