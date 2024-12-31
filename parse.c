@@ -75,7 +75,6 @@ int parse(t_prog *prog, int argc, char **argv)
 			printf("ERROR malloc. Fork index: %d\n", i);
 			// free **forks
 		}
-		// calloc?
 		if (pthread_mutex_init(forks[i], NULL) != 0)
 		{
 			printf("ERROR pthread_mutex_init. Fork index: %d\n", i);
@@ -113,22 +112,31 @@ int parse(t_prog *prog, int argc, char **argv)
 		philos[i]->time_to_eat = prog->time_to_eat;
 		philos[i]->time_to_sleep = prog->time_to_sleep;
 
-		if (i == 0)
+		// TODO!!!! if 1 philo -> only 1 FORK
+		if (number_of_philosophers == 1)
 		{
 			philos[i]->fork1 = forks[i];
-			philos[i]->fork2 = forks[number_of_philosophers - 1];
-		}
-		else if (i == number_of_philosophers - 1)
-		{
-			philos[i]->fork1 = forks[i];
-			philos[i]->fork2 = forks[i - 1];
+			philos[i]->fork2 = NULL;
 		}
 		else
 		{
-			philos[i]->fork1 = forks[i];
-			philos[i]->fork2 = forks[i + 1];
+			if (i == 0)
+			{
+				philos[i]->fork1 = forks[i];
+				philos[i]->fork2 = forks[number_of_philosophers - 1];
+			}
+			else if (i == number_of_philosophers - 1)
+			{
+				philos[i]->fork1 = forks[i];
+				philos[i]->fork2 = forks[i - 1];
+			}
+			else
+			{
+				philos[i]->fork1 = forks[i];
+				philos[i]->fork2 = forks[i + 1];
+			}
 		}
-		//	philos[i]->result = NULL;
+		// philos[i]->result = NULL;
 		// philos[i]->thread = -1; ??????? on mac error
 		philos[i]->i = i + 1;
 		i++;
