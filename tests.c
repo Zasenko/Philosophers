@@ -16,8 +16,8 @@ int counter = 0;
 int main(void)
 {
     //test_kill();
-    test_pthread_create();
-    //test_pthread_detach();
+   // test_pthread_create();
+    test_pthread_detach();
     //mutex_test();
     printf("END\n");
 }
@@ -212,6 +212,11 @@ void *get_time(void *arg)
     //     printf("%d get_time work\n", i);
     // printf("get_time Конец паузы\n");
     struct timeval tv;
+    // _STRUCT_TIMEVAL
+    // {
+    //     __darwin_time_t tv_sec;       /* seconds */
+    //     __darwin_suseconds_t tv_usec; /* and microseconds */
+    // };
     gettimeofday(&tv, NULL);
  //   printf("get_time Секунды: %ld, Микросекунды: %ld\n", tv.tv_sec, tv.tv_usec);
     printf("get_time Секунды: %ld, Микросекунды: %d\n", tv.tv_sec, tv.tv_usec);

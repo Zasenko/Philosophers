@@ -19,27 +19,42 @@ void	*create_philosopher(void *arg)
 	philo = (t_philo *)arg;
 	if (!philo)
 		return (NULL);
-	// (void)arg;
-	// int *result = malloc(sizeof(int));
-	// if (!result)
-	// {
-	// 	perror("malloc");
-    //     return NULL;	
-	// }
+	struct timeval t;
 
-	// When a philosopher has finished eating, they put their forks back on the table and
-	// start sleeping.Once awake, they start thinking again.The simulation stops when
-	// a philosopher dies of starvation.
+	if (gettimeofday(&t, NULL) == -1)
+	{
+		printf("ERROR gettimeofday\n");
+		return (NULL);
+	}
+	printf("gettimeofday %lu, %d \n", t.tv_sec, t.tv_usec);
+
+	// gettimeofday 1735624879, 358013
+	// gettimeofday 1735624914, 530660
+
+		// When a philosopher has finished eating, they put their forks back on the table and
+		// start sleeping.Once awake, they start thinking again.The simulation stops when
+		// a philosopher dies of starvation.
 
 	if (philo->must_eat_times > 0) // TODO!!!! must_eat_times > 0    ???????
 	{
 		while (philo->must_eat_times > 0)
 		{
 
-			pthread_mutex_lock(philo->fork1);
-			printf("Phil %d has taken a fork 1\n", philo->i);
-			pthread_mutex_lock(philo->fork2);
-			printf("Phil %d has taken a fork 2\n", philo->i);
+			if (philo->i % 2 != 0)//async lock NOT WORKING sometimes
+			{
+				pthread_mutex_lock(philo->fork1);
+				printf("Phil %d has taken a fork 1\n", philo->i);
+				pthread_mutex_lock(philo->fork2);
+				printf("Phil %d has taken a fork 2\n", philo->i);
+			}
+			else
+			{
+				pthread_mutex_lock(philo->fork2);
+				printf("Phil %d has taken a fork 2\n", philo->i);
+				pthread_mutex_lock(philo->fork1);
+				printf("Phil %d has taken a fork 1\n", philo->i);
+			}
+			//sleep(5);
 			printf("Phil %d is eating\n", philo->i);
 			usleep(philo->time_to_eat);
 
@@ -72,6 +87,7 @@ void	*create_philosopher(void *arg)
 		return ((void *)"0");
 	}
 	// printf("timestamp_in_ms %d died\n", philo->i);
+	// TODO pthread_mutex_destroy
 	return (NULL);
 }
 
@@ -151,6 +167,8 @@ int	main(int argc, char **argv)
 		int i = 0;
 		while (prog.forks[i])
 		{
+			printf("free fork %d: %ld\n", i, prog.forks[i]->__sig);
+			pthread_mutex_destroy(prog.forks[i]);
 			free(prog.forks[i]);
 			prog.forks[i] = NULL;
 			i++;
@@ -163,6 +181,8 @@ int	main(int argc, char **argv)
 		int i = 0;
 		while (prog.philos[i])
 		{
+			printf("free philos %d\n", i);
+
 			free(prog.philos[i]);
 			prog.philos[i] = NULL;
 			i++;

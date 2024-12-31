@@ -31,7 +31,8 @@ typedef struct s_philo
 	pthread_mutex_t *fork1;
 	pthread_mutex_t *fork2;
 	pthread_t thread;
-}	t_philo;
+	struct timeval *creat;
+} t_philo;
 
 typedef struct s_prog
 {

@@ -25,11 +25,10 @@ int parse(t_prog *prog, int argc, char **argv)
 		return (-1);
 	}
 	
-	// The number of philosophers and also the number of forks.
 	int number_of_philosophers = atoi(argv[1]);	//todo atoi
 	if (number_of_philosophers < 1)
 	{
-		write(1, "Wrong philosophers count\n", 21);
+		printf("Wrong philosophers count. It should be > 0\n");
 		return (-1);
 	}
 
@@ -38,11 +37,7 @@ int parse(t_prog *prog, int argc, char **argv)
 	// the beginning of their last meal or the beginning of the simulation, they die.
 	
 	prog->time_to_die = atoi(argv[2]);//todo atoi
-
-	//time_to_eat
 	prog->time_to_eat = atoi(argv[3]);//todo atoi
-
-	//time_to_sleep
 	prog->time_to_sleep = atoi(argv[4]);//todo atoi
 	
 	//[number_of_times_each_philosopher_must_eat]
@@ -62,7 +57,7 @@ int parse(t_prog *prog, int argc, char **argv)
 	forks = (pthread_mutex_t **)malloc(sizeof(pthread_mutex_t *) * (number_of_philosophers + 1));
 	if (!forks)
 	{
-		write(1, "malloc error\n", 13);
+		printf("malloc error\n");
 		return (-1);
 	}
 	int i = 0;
@@ -86,6 +81,7 @@ int parse(t_prog *prog, int argc, char **argv)
 			printf("ERROR pthread_mutex_init. Fork index: %d\n", i);
 			// free **forks
 		}
+		printf("-- forks %d: op: %s, %ld\n", i, forks[i]->__opaque, forks[i]->__sig);
 		i++;
 	}
 	prog->forks = forks;
@@ -125,15 +121,13 @@ int parse(t_prog *prog, int argc, char **argv)
 		else if (i == number_of_philosophers - 1)
 		{
 			philos[i]->fork1 = forks[i];
-			philos[i]->fork2 = forks[0];
+			philos[i]->fork2 = forks[i - 1];
 		}
 		else
 		{
 			philos[i]->fork1 = forks[i];
 			philos[i]->fork2 = forks[i + 1];
 		}
-		printf("Phil %d: forks 1: %ld\n", i + 1, philos[i]->fork1->__sig);
-		printf("Phil %d: forks 2: %ld\n", i + 1, philos[i]->fork2->__sig);
 		//	philos[i]->result = NULL;
 		// philos[i]->thread = -1; ??????? on mac error
 		philos[i]->i = i + 1;
