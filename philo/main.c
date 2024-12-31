@@ -20,19 +20,8 @@ void	*create_philosopher(void *arg)
 	if (!philo || !philo->fork1)
 		return (NULL);
 
-	struct timeval t;
-	if (gettimeofday(&t, NULL) == -1)
-	{
-		printf("ERROR gettimeofday\n");
-		return (NULL);
-	}
-	printf("gettimeofday %lu, %d \n", t.tv_sec, t.tv_usec);
-	// gettimeofday 1735624879, 358013
-	// gettimeofday 1735624914, 530660
+	// get time -> add to philo
 
-	// When a philosopher has finished eating, they put their forks back on the table and
-	// start sleeping.Once awake, they start thinking again.The simulation stops when
-	// a philosopher dies of starvation.
 	if (!philo->fork2)
 	{
 		printf("NO FORK 2!!!!!\n");
@@ -44,6 +33,11 @@ void	*create_philosopher(void *arg)
 		{
 			while (philo->must_eat_times > 0)
 			{
+				// A message announcing a philosopher died should be  displayed no more than 10 ms after the actual death of the philosopher.
+				// todo: check time to death. how?
+
+				// create new thread with updated time (add time to philo struck) and chech with while(1) { get new time. if new time - philo.time > philo.time_to_die == DEAD}  and wait when  philo dead (return ).
+
 				if (philo->i % 2 != 0)
 				{
 					if (pthread_mutex_lock(philo->fork1) != 0 || pthread_mutex_lock(philo->fork2) != 0)
@@ -64,7 +58,7 @@ void	*create_philosopher(void *arg)
 				}
 				printf("Phil %d is eating\n", philo->i);
 				usleep(philo->time_to_eat);
-
+				// update philo.time
 				if (pthread_mutex_unlock(philo->fork1) != 0 || pthread_mutex_unlock(philo->fork2) != 0)
 				{
 					perror("pthread_mutex_unlock error");
@@ -83,13 +77,7 @@ void	*create_philosopher(void *arg)
 		{
 			while (1)
 			{
-				printf("timestamp_in_ms %d has taken a fork\n", philo->i);
-				printf("timestamp_in_ms %d is eating\n", philo->i);
-				usleep(philo->time_to_eat);
-				printf("timestamp_in_ms %d is sleeping\n", philo->i);
-				usleep(philo->time_to_sleep);
-				printf("timestamp_in_ms %d is thinking\n", philo->i);
-				return ((void *)"0");
+				/// same code in while (philo->must_eat_times > 0)
 			}
 			return ((void *)"0");
 		}
@@ -121,7 +109,15 @@ int	wait_results(t_philo *philo)
 
 int	main(int argc, char **argv)
 {
-	
+
+	struct timeval t;
+	if (gettimeofday(&t, NULL) == -1)
+	{
+		printf("ERROR gettimeofday\n");
+		return (1);
+	}
+	printf("gettimeofday %lu, %d \n", t.tv_sec, t.tv_usec);
+
 	t_prog prog;
 
 	prog.number_of_philosophers = 0;
@@ -198,7 +194,7 @@ int	main(int argc, char **argv)
 		free(prog.philos);
 		prog.philos = NULL;
 	}
-
+	printf("gettimeofday %lu, %d \n", t.tv_sec, t.tv_usec);
 	return (EXIT_SUCCESS);
 }
 
