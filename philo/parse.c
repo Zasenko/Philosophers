@@ -80,7 +80,6 @@ int parse(t_prog *prog, int argc, char **argv)
 			printf("ERROR pthread_mutex_init. Fork index: %d\n", i);
 			// free **forks
 		}
-		printf("-- forks %d: op: %s, %ld\n", i, forks[i]->__opaque, forks[i]->__sig);
 		i++;
 	}
 	prog->forks = forks;
@@ -111,8 +110,7 @@ int parse(t_prog *prog, int argc, char **argv)
 		philos[i]->time_to_die = prog->time_to_die;
 		philos[i]->time_to_eat = prog->time_to_eat;
 		philos[i]->time_to_sleep = prog->time_to_sleep;
-
-		// TODO!!!! if 1 philo -> only 1 FORK
+		philos[i]->time = -1;
 		if (number_of_philosophers == 1)
 		{
 			philos[i]->fork1 = forks[i];
@@ -136,8 +134,6 @@ int parse(t_prog *prog, int argc, char **argv)
 				philos[i]->fork2 = forks[i + 1];
 			}
 		}
-		// philos[i]->result = NULL;
-		// philos[i]->thread = -1; ??????? on mac error
 		philos[i]->i = i + 1;
 		i++;
 	}

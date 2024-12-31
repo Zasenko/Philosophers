@@ -12,16 +12,82 @@
 
 #include "philo.h"
 
+long get_time()
+{
+	struct timeval tv;
+
+	if (gettimeofday(&tv, NULL) == -1)
+		return (perror("gettimeofday error"), -1);
+	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+}
+
+int philo_circle(t_philo *philo)
+{
+	if (!philo)
+		return (-1);
+
+	if (philo->i % 2 != 0)
+	{
+		if (pthread_mutex_lock(philo->fork1) != 0 || pthread_mutex_lock(philo->fork2) != 0)
+		{
+			perror("pthread_mutex_lock error");
+			return (-1);
+		}
+		printf("Phil %d has taken a fork\n", philo->i);
+	}
+	else
+	{
+		if (pthread_mutex_lock(philo->fork2) != 0 || pthread_mutex_lock(philo->fork1) != 0)
+		{
+			perror("pthread_mutex_lock error");
+			return (-1);
+		}
+		printf("Phil %d has taken a fork\n", philo->i);
+	}
+
+	long time;
+	time = get_time();
+	if (time == -1)
+		return (-1);
+	philo->time = time;
+
+	// while(1)
+	// {
+	// 	if ()
+	// }
+
+	printf("Phil %d is eating\n", philo->i);
+	usleep(philo->time_to_eat);
+	// update philo.time
+
+	if (pthread_mutex_unlock(philo->fork1) != 0 || pthread_mutex_unlock(philo->fork2) != 0)
+	{
+		perror("pthread_mutex_unlock error");
+		return (-1);
+	}
+	printf("Phil %d has put a fork\n", philo->i); // todo delete
+
+	printf("Phil %d is sleeping\n", philo->i);
+	usleep(philo->time_to_sleep);
+
+	printf("Phil %d is thinking\n", philo->i);
+	return (1);
+}
+
 void	*create_philosopher(void *arg)
 {
 	t_philo	*philo;
-
+	
 	philo = (t_philo *)arg;
 	if (!philo || !philo->fork1)
 		return (NULL);
-
-	// get time -> add to philo
-
+	
+	long time;
+	time = get_time();
+	if (time == -1)
+		return (NULL);
+	
+	philo->time = time;
 	if (!philo->fork2)
 	{
 		printf("NO FORK 2!!!!!\n");
@@ -33,43 +99,12 @@ void	*create_philosopher(void *arg)
 		{
 			while (philo->must_eat_times > 0)
 			{
-				// A message announcing a philosopher died should be  displayed no more than 10 ms after the actual death of the philosopher.
-				// todo: check time to death. how?
-
-				// create new thread with updated time (add time to philo struck) and chech with while(1) { get new time. if new time - philo.time > philo.time_to_die == DEAD}  and wait when  philo dead (return ).
-
-				if (philo->i % 2 != 0)
-				{
-					if (pthread_mutex_lock(philo->fork1) != 0 || pthread_mutex_lock(philo->fork2) != 0)
-					{
-						perror("pthread_mutex_lock error");
-						return (NULL);
-					}
-					printf("Phil %d has taken a fork\n", philo->i);
-				}
-				else
-				{
-					if (pthread_mutex_lock(philo->fork2) != 0 || pthread_mutex_lock(philo->fork1) != 0)
-					{
-						perror("pthread_mutex_lock error");
-						return (NULL);
-					}
-					printf("Phil %d has taken a fork\n", philo->i);
-				}
-				printf("Phil %d is eating\n", philo->i);
-				usleep(philo->time_to_eat);
-				// update philo.time
-				if (pthread_mutex_unlock(philo->fork1) != 0 || pthread_mutex_unlock(philo->fork2) != 0)
-				{
-					perror("pthread_mutex_unlock error");
+				int result = philo_circle(philo);
+				if (result == -1)
 					return (NULL);
-				}
-				printf("Phil %d has put a fork\n", philo->i); // todo delete
-				printf("Phil %d is sleeping\n", philo->i);
-				usleep(philo->time_to_sleep);
-				printf("Phil %d is thinking\n", philo->i);
+				else if (result == 0)
+					return ((void *)"0");
 				philo->must_eat_times--;
-				printf("Phil %d must_eat_times: %d\n", philo->i, philo->must_eat_times); // todo delete
 			}
 			return ((void *)"1");
 		}
@@ -77,9 +112,12 @@ void	*create_philosopher(void *arg)
 		{
 			while (1)
 			{
-				/// same code in while (philo->must_eat_times > 0)
+				int result = philo_circle(philo);
+				if (result == -1)
+					return (NULL);
+				else if (result == 0)
+					return ((void *)"0");
 			}
-			return ((void *)"0");
 		}
 	// printf("timestamp_in_ms %d died\n", philo->i);
 	// TODO pthread_mutex_destroy
@@ -94,7 +132,8 @@ int	wait_results(t_philo *philo)
 	if (!philo)
 		return (printf("ERROR wait_results: !philo\n"), -1);
 	
-	pthread_join(philo->thread, &result);
+	if (pthread_join(philo->thread, &result) != 0)
+		return (perror("ERROR pthread_join \n"), -1);
 	if (result == NULL)
 	{
 		printf("Result %d NULL\n", philo->i);
@@ -150,13 +189,15 @@ int	main(int argc, char **argv)
 	
 	while (prog.philos[i])
 	{
-		if (wait_results(prog.philos[i]) == -1)
+		int result = wait_results(prog.philos[i]);
+
+		if (result == -1)
 		{
 			printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
 
 			//return (EXIT_FAILURE);
 		}
-		else if (wait_results(prog.philos[i]) == 0)
+		else if (result == 0)
 		{
 			printf("Philosopher: %d dead!!!!!\n", prog.philos[i]->i);
 		}
