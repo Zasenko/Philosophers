@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2024/12/30 14:56:18 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/02 11:53:51 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,5 +46,7 @@ typedef struct s_prog
 } t_prog;
 
 int		parse(t_prog *prog, int argc, char **argv);
+int		philo_circle(t_philo *philo);
+long	get_time();
 
 #endif

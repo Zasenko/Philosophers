@@ -2,7 +2,7 @@ NAME = philo
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
-SRC = main.c parse.c
+SRC = main.c parse.c life_circle.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)

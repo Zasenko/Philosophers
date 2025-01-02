@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 12:19:47 by dzasenko          #+#    #+#             */
-/*   Updated: 2024/12/30 15:07:49 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/02 12:45:29 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,27 +111,20 @@ int parse(t_prog *prog, int argc, char **argv)
 		philos[i]->time_to_eat = prog->time_to_eat;
 		philos[i]->time_to_sleep = prog->time_to_sleep;
 		philos[i]->time = -1;
+		philos[i]->fork1 = forks[i];
 		if (number_of_philosophers == 1)
-		{
-			philos[i]->fork1 = forks[i];
 			philos[i]->fork2 = NULL;
-		}
 		else
 		{
-			if (i == 0)
-			{
-				philos[i]->fork1 = forks[i];
+			if (i == 0) {
 				philos[i]->fork2 = forks[number_of_philosophers - 1];
+				printf("Philo %d have fork1 %d and %d\n", i + 1, i, number_of_philosophers - 1);
+
 			}
-			else if (i == number_of_philosophers - 1)
-			{
-				philos[i]->fork1 = forks[i];
+			else {
 				philos[i]->fork2 = forks[i - 1];
-			}
-			else
-			{
-				philos[i]->fork1 = forks[i];
-				philos[i]->fork2 = forks[i + 1];
+				printf("Philo %d have fork1 %d and %d\n", i + 1, i, i - 1);
+
 			}
 		}
 		philos[i]->i = i + 1;

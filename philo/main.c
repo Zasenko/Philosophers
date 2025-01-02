@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2024/12/30 15:22:47 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/02 11:53:18 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,59 +19,6 @@ long get_time()
 	if (gettimeofday(&tv, NULL) == -1)
 		return (perror("gettimeofday error"), -1);
 	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-}
-
-int philo_circle(t_philo *philo)
-{
-	if (!philo)
-		return (-1);
-
-	if (philo->i % 2 != 0)
-	{
-		if (pthread_mutex_lock(philo->fork1) != 0 || pthread_mutex_lock(philo->fork2) != 0)
-		{
-			perror("pthread_mutex_lock error");
-			return (-1);
-		}
-		printf("Phil %d has taken a fork\n", philo->i);
-	}
-	else
-	{
-		if (pthread_mutex_lock(philo->fork2) != 0 || pthread_mutex_lock(philo->fork1) != 0)
-		{
-			perror("pthread_mutex_lock error");
-			return (-1);
-		}
-		printf("Phil %d has taken a fork\n", philo->i);
-	}
-
-	long time;
-	time = get_time();
-	if (time == -1)
-		return (-1);
-	philo->time = time;
-
-	// while(1)
-	// {
-	// 	if ()
-	// }
-
-	printf("Phil %d is eating\n", philo->i);
-	usleep(philo->time_to_eat);
-	// update philo.time
-
-	if (pthread_mutex_unlock(philo->fork1) != 0 || pthread_mutex_unlock(philo->fork2) != 0)
-	{
-		perror("pthread_mutex_unlock error");
-		return (-1);
-	}
-	printf("Phil %d has put a fork\n", philo->i); // todo delete
-
-	printf("Phil %d is sleeping\n", philo->i);
-	usleep(philo->time_to_sleep);
-
-	printf("Phil %d is thinking\n", philo->i);
-	return (1);
 }
 
 void	*create_philosopher(void *arg)
@@ -148,15 +95,6 @@ int	wait_results(t_philo *philo)
 
 int	main(int argc, char **argv)
 {
-
-	struct timeval t;
-	if (gettimeofday(&t, NULL) == -1)
-	{
-		printf("ERROR gettimeofday\n");
-		return (1);
-	}
-	printf("gettimeofday %lu, %d \n", t.tv_sec, t.tv_usec);
-
 	t_prog prog;
 
 	prog.number_of_philosophers = 0;
@@ -212,7 +150,7 @@ int	main(int argc, char **argv)
 		int i = 0;
 		while (prog.forks[i])
 		{
-			printf("free fork %d: %ld\n", i, prog.forks[i]->__sig);
+			printf("free fork %d\n", i);
 			pthread_mutex_destroy(prog.forks[i]);
 			free(prog.forks[i]);
 			prog.forks[i] = NULL;
@@ -235,7 +173,6 @@ int	main(int argc, char **argv)
 		free(prog.philos);
 		prog.philos = NULL;
 	}
-	printf("gettimeofday %lu, %d \n", t.tv_sec, t.tv_usec);
 	return (EXIT_SUCCESS);
 }
 
