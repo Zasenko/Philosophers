@@ -28,9 +28,11 @@ typedef struct s_philo
 	int	time_to_eat;
 	int	time_to_sleep;
 	int	must_eat_times;
-	//void *result;
+	pthread_mutex_t *fork1;
+	pthread_mutex_t *fork2;
 	pthread_t thread;
-}	t_philo;
+	long time;
+} t_philo;
 
 typedef struct s_prog
 {
@@ -40,9 +42,9 @@ typedef struct s_prog
 	int		time_to_sleep;
 	int		must_eat_times;
 	t_philo	**philos;
-}	t_prog;
+	pthread_mutex_t **forks;
+} t_prog;
 
 int		parse(t_prog *prog, int argc, char **argv);
-void	tests(void);//todo delete
 
 #endif
