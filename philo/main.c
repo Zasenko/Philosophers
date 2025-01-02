@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/02 14:52:34 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/02 16:07:20 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,13 @@ void	*create_philosopher(void *arg)
 	time_of_creations = get_time();
 	if (time_of_creations == -1)
 		return (NULL);	// ? todo free *philo
+	
+	if (pthread_mutex_lock(&philo->phil) != 0)
+		return (NULL);	// ? todo free *philo
 	philo->time = time_of_creations;
+	if (pthread_mutex_unlock(&philo->phil) != 0)
+		return (NULL);	// ? todo free *philo
+
 	if (!philo->fork2)
 	{
 		printf("NO FORK 2 - DEATH !!!!!\n");
@@ -51,7 +57,11 @@ void	*create_philosopher(void *arg)
 					return (NULL);// ? todo free *philo
 				else if (result == 0)
 					return ((void *)"0");// ? todo free *philo
+				if (pthread_mutex_lock(&philo->phil) != 0)
+					return (NULL);	// ? todo free *philo
 				philo->must_eat_times--;
+				if (pthread_mutex_unlock(&philo->phil) != 0)
+					return (NULL);	// ? todo free *philo
 			}
 			return ((void *)"1");// ? todo free *philo
 		}
@@ -162,6 +172,9 @@ int	main(int argc, char **argv)
 		int i = 0;
 		while (prog.philos[i])
 		{
+			if (pthread_mutex_destroy(&(prog.philos[i]->phil)) != 0)
+				printf("pthread_mutex_destroy ERROR\n");
+				
 			printf("free philos %d\n", i);
 			free(prog.philos[i]);
 			prog.philos[i] = NULL;
@@ -172,7 +185,7 @@ int	main(int argc, char **argv)
 	}
 	return (EXIT_SUCCESS);
 }
-
+//valgrind --tool=helgrind ./philo 5 800 200 200 3
 
 // Test 1 800 200 200. The philosopher should not eat and should die.
 // Test 5 800 200 200. No philosopher should die.

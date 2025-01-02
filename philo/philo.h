@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/02 11:53:51 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/02 14:54:51 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_philo
 	int	must_eat_times;
 	pthread_mutex_t *fork1;
 	pthread_mutex_t *fork2;
+	pthread_mutex_t phil;
 	pthread_t thread;
 	long time;
 } t_philo;
