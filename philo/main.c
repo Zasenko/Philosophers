@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/02 11:53:18 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/02 14:52:34 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,21 +24,21 @@ long get_time()
 void	*create_philosopher(void *arg)
 {
 	t_philo	*philo;
+	long	time_of_creations;
 	
 	philo = (t_philo *)arg;
-	if (!philo || !philo->fork1)
+	if (!philo)
 		return (NULL);
-	
-	long time;
-	time = get_time();
-	if (time == -1)
-		return (NULL);
-	
-	philo->time = time;
+	if (!philo->fork1)
+		return (NULL);// ? todo free *philo
+	time_of_creations = get_time();
+	if (time_of_creations == -1)
+		return (NULL);	// ? todo free *philo
+	philo->time = time_of_creations;
 	if (!philo->fork2)
 	{
-		printf("NO FORK 2!!!!!\n");
-		return ((void *)"0");
+		printf("NO FORK 2 - DEATH !!!!!\n");
+		return ((void *)"0");// ? todo free *philo
 	}
 	else
 	{
@@ -48,12 +48,12 @@ void	*create_philosopher(void *arg)
 			{
 				int result = philo_circle(philo);
 				if (result == -1)
-					return (NULL);
+					return (NULL);// ? todo free *philo
 				else if (result == 0)
-					return ((void *)"0");
+					return ((void *)"0");// ? todo free *philo
 				philo->must_eat_times--;
 			}
-			return ((void *)"1");
+			return ((void *)"1");// ? todo free *philo
 		}
 		else
 		{
@@ -61,15 +61,13 @@ void	*create_philosopher(void *arg)
 			{
 				int result = philo_circle(philo);
 				if (result == -1)
-					return (NULL);
+					return (NULL);// ? todo free *philo
 				else if (result == 0)
-					return ((void *)"0");
+					return ((void *)"0");// ? todo free *philo
 			}
 		}
-	// printf("timestamp_in_ms %d died\n", philo->i);
-	// TODO pthread_mutex_destroy
 	}
-	return (NULL);
+	return (NULL);// ? todo free *philo
 }
 
 int	wait_results(t_philo *philo)
@@ -132,7 +130,6 @@ int	main(int argc, char **argv)
 		if (result == -1)
 		{
 			printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
-
 			//return (EXIT_FAILURE);
 		}
 		else if (result == 0)
@@ -143,15 +140,16 @@ int	main(int argc, char **argv)
 	}
 		
 	printf("END\n");
+	
 	//free prog
-
 	if (prog.forks)
 	{
 		int i = 0;
 		while (prog.forks[i])
 		{
 			printf("free fork %d\n", i);
-			pthread_mutex_destroy(prog.forks[i]);
+			if (pthread_mutex_destroy(prog.forks[i]) != 0)
+				printf("pthread_mutex_destroy ERROR\n");
 			free(prog.forks[i]);
 			prog.forks[i] = NULL;
 			i++;
@@ -165,7 +163,6 @@ int	main(int argc, char **argv)
 		while (prog.philos[i])
 		{
 			printf("free philos %d\n", i);
-
 			free(prog.philos[i]);
 			prog.philos[i] = NULL;
 			i++;

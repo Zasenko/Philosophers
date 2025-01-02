@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 10:31:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/02 13:35:39 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/02 13:44:35 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ int	eating(t_philo *philo)
 	if (time == -1)
 		return (-1);
 	philo->time = time;
-	
 	printf("%ld %d is eating\n", time, philo->i);
 	usleep(philo->time_to_eat);
 	if (pthread_mutex_unlock(philo->fork1) != 0)

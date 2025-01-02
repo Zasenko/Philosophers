@@ -6,60 +6,39 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 12:19:47 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/02 12:45:29 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/02 14:37:14 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int parse(t_prog *prog, int argc, char **argv)
+int	parse(t_prog *prog, int argc, char **argv)
 {
+	int	number_of_philosophers;
+	
 	// TODO TRIM each arg
 	if (!prog || !argv || !*argv)
-	{
 		return (-1);
-	}
 	if (argc < 5 || argc  > 6)
-	{
-		write(1, "Wrong argumnts count\n", 21);
-		return (-1);
-	}
+		return (printf("Wrong argumnts count\n"), -1);
 	
-	int number_of_philosophers = atoi(argv[1]);	//todo atoi
+	number_of_philosophers = atoi(argv[1]);	//todo atoi
 	if (number_of_philosophers < 1)
-	{
-		printf("Wrong philosophers count. It should be > 0\n");
-		return (-1);
-	}
-
-	// time_to_die
-	// If a philosopher didn’t start eating time_to_die milliseconds since
-	// the beginning of their last meal or the beginning of the simulation, they die.
-	
+		return (printf("Wrong philosophers count. It should be > 0\n"), -1);
 	prog->time_to_die = atoi(argv[2]);//todo atoi
 	prog->time_to_eat = atoi(argv[3]);//todo atoi
 	prog->time_to_sleep = atoi(argv[4]);//todo atoi
-	
-	//[number_of_times_each_philosopher_must_eat]
-	//TODO!!! ?? why array?
 	if (argc == 6)
 	{
 		prog->must_eat_times = atoi(argv[5]);//todo atoi
-		if (prog->must_eat_times < 1)// TODO!!!! must_eat_times > 0 ???????
-		{
-			printf("number of times each philosopher must eat should be > 0\n");
-			return (-1);
-		}
+		if (prog->must_eat_times < 1)
+			return (printf("number of times each philosopher must eat should be > 0\n"), -1);
 	}
 
 	pthread_mutex_t **forks;
-
 	forks = (pthread_mutex_t **)malloc(sizeof(pthread_mutex_t *) * (number_of_philosophers + 1));
 	if (!forks)
-	{
-		printf("malloc error\n");
-		return (-1);
-	}
+		return (printf("malloc error\n"), -1);
 	int i = 0;
 	while (i <= number_of_philosophers)
 	{
@@ -87,10 +66,7 @@ int parse(t_prog *prog, int argc, char **argv)
 	t_philo **philos;
 	philos = (t_philo **)malloc(sizeof(t_philo *) * (number_of_philosophers +1));
 	if (!philos)
-	{
-		write(1, "malloc error\n", 13);
-		return (-1);
-	}
+		return (printf("malloc error\n"), -1);
 	i = 0;
 	while (i <= number_of_philosophers)
 	{
@@ -98,7 +74,6 @@ int parse(t_prog *prog, int argc, char **argv)
 		i++;
 	}
 	i = 0;
-
 	while (i < number_of_philosophers)
 	{
 		philos[i] = malloc(sizeof(t_philo));
@@ -118,13 +93,9 @@ int parse(t_prog *prog, int argc, char **argv)
 		{
 			if (i == 0) {
 				philos[i]->fork2 = forks[number_of_philosophers - 1];
-				printf("Philo %d have fork1 %d and %d\n", i + 1, i, number_of_philosophers - 1);
-
 			}
 			else {
 				philos[i]->fork2 = forks[i - 1];
-				printf("Philo %d have fork1 %d and %d\n", i + 1, i, i - 1);
-
 			}
 		}
 		philos[i]->i = i + 1;
