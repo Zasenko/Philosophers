@@ -39,7 +39,7 @@ void	*create_philosopher(void *arg)
 		return (NULL);	// ? todo free *philo
 	philo->time = time_of_creations;
 	if (pthread_mutex_unlock(philo->phil) != 0)
-		return (NULL);	// ? todo free *philo
+		return (NULL); // ? todo free *philo // how to unlock phil ahaha ????
 
 	if (!philo->fork2)
 	{
@@ -61,7 +61,7 @@ void	*create_philosopher(void *arg)
 					return (NULL);	// ? todo free *philo
 				philo->must_eat_times--;
 				if (pthread_mutex_unlock(philo->phil) != 0)
-					return (NULL);	// ? todo free *philo
+					return (NULL); // ? todo free *philo // how to unlock if error?
 			}
 			return ((void *)"1");// ? todo free *philo
 		}
@@ -133,12 +133,16 @@ int	main(int argc, char **argv)
 		i++;
 	}
 
+	// wait result
+	// while (1)
+	// check if someome is dead -> all should dead
+	// if all philos have eaten -> finish
+
+	// remove!
 	i = 0;
-	
 	while (prog.philos[i])
 	{
 		int result = wait_results(prog.philos[i]);
-
 		if (result == -1)
 		{
 			free_prog(&prog);
@@ -146,15 +150,12 @@ int	main(int argc, char **argv)
 			//return (EXIT_FAILURE);
 		}
 		else if (result == 0)
-		{
-			free_prog(&prog);
 			printf("Philosopher: %d dead!!!!!\n", prog.philos[i]->i);
-		}
 		i++;
 	}
-		
+	//
+
 	printf("END\n");
-	
 	free_prog(&prog);
 	return (EXIT_SUCCESS);
 }
