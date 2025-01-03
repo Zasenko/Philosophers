@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/02 16:07:20 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/03 13:28:44 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,9 @@ int	wait_results(t_philo *philo)
 	}
 	else
 	{
+		pthread_mutex_lock(philo->print);
 		printf("Result %d: %s\n", philo->i, (char *)result);
+		pthread_mutex_unlock(philo->print);
 	}
 	return (1);
 }
@@ -106,7 +108,7 @@ int	main(int argc, char **argv)
 	t_prog prog;
 
 	if (!init_prog(&prog))
-		return (EXIT_FAILURE);
+		return (free_prog(&prog), EXIT_FAILURE);
 	if (parse(&prog, argc, argv) == -1)
 		return (free_prog(&prog), EXIT_FAILURE);
 	
@@ -114,7 +116,9 @@ int	main(int argc, char **argv)
 	while (prog.philos[i])
 	{
 		pthread_t thread;
+		pthread_mutex_lock(prog.print);
     	printf("creating philosopher: %d\n", prog.philos[i]->i);
+		pthread_mutex_unlock(prog.print);
 		if (pthread_create(&thread, NULL, create_philosopher, (void *)prog.philos[i]) != 0)
 		{
 			free_prog(&prog);
@@ -138,16 +142,23 @@ int	main(int argc, char **argv)
 		if (result == -1)
 		{
 			free_prog(&prog);
+			pthread_mutex_lock(prog.print);
 			printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
+			pthread_mutex_unlock(prog.print);
 			//return (EXIT_FAILURE);
 		}
 		else if (result == 0)
+		{
+			pthread_mutex_lock(prog.print);
 			printf("Philosopher: %d dead!!!!!\n", prog.philos[i]->i);
+			pthread_mutex_unlock(prog.print);
+		}
 		i++;
 	}
 	//
-
+	pthread_mutex_lock(prog.print);
 	printf("END\n");
+	pthread_mutex_unlock(prog.print);
 	free_prog(&prog);
 	return (EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 12:19:47 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/02 14:56:42 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/03 13:11:26 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,12 +103,6 @@ int	parse(t_prog *prog, int argc, char **argv)
 				philos[i]->fork2 = forks[i - 1];
 		}
 		
-		if (pthread_mutex_init(philos[i]->phil, NULL) != 0)
-		{
-			printf("ERROR pthread_mutex_init Phil index: %d\n", i);
-			// free
-		}
-
 		philos[i]->phil = malloc(sizeof(pthread_mutex_t));
 		if (philos[i]->phil == NULL)
 		{
@@ -122,6 +116,7 @@ int	parse(t_prog *prog, int argc, char **argv)
 			free_philos(philos);
 			return (-1);
 		}
+		philos[i]->print = prog->print;
 		i++;
 	}
 	printf("----------------\n");

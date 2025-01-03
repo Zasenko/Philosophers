@@ -1,14 +1,32 @@
-#include  "philo.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dzasenko <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/03 13:29:27 by dzasenko          #+#    #+#             */
+/*   Updated: 2025/01/03 13:29:30 by dzasenko         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philo.h"
+#include "errno.h"
 
 void free_prog(t_prog *prog)
 {
     if (!prog)
-        return;
-
+        return ;
     free_forks(prog->forks);
     prog->forks = NULL;
     free_philos(prog->philos);
     prog->philos = NULL;
+    if (prog->print)
+    {
+        destroy_mutex(prog->print);
+        free(prog->print);
+        prog->print = NULL;
+    }
 }
 
 void free_forks(pthread_mutex_t **forks)
@@ -21,8 +39,7 @@ void free_forks(pthread_mutex_t **forks)
     while (forks[i])
     {
         printf("free fork %d\n", i);
-        if (pthread_mutex_destroy(forks[i]) != 0)
-            printf("pthread_mutex_destroy ERROR\n");
+        destroy_mutex(forks[i]);
         free(forks[i]);
         forks[i] = NULL;
         i++;
@@ -39,8 +56,29 @@ void free_philos(t_philo **philos)
     i = 0;
     while (philos[i])
     {
-        if (pthread_mutex_destroy(philos[i]->phil) != 0)
-            printf("pthread_mutex_destroy philo %d ERROR\n", i);
+        if (philos[i]->phil)
+        {
+            destroy_mutex(philos[i]->phil);
+            free(philos[i]->phil);
+        }
+
+        if (philos[i]->fork1)
+        {
+            destroy_mutex(philos[i]->fork1);
+            free(philos[i]->fork1);
+        }
+
+        if (philos[i]->fork2)
+        {
+            destroy_mutex(philos[i]->fork2);
+            free(philos[i]->fork2);
+        }
+
+        if (philos[i]->print)
+        {
+            destroy_mutex(philos[i]->print);
+            free(philos[i]->print);
+        }
         printf("free philos %d\n", i);
         free(philos[i]);
         philos[i] = NULL;
@@ -56,12 +94,12 @@ void destroy_mutex(pthread_mutex_t *mutex)
 
     int result = pthread_mutex_destroy(mutex);
 
-    if (result == 16)
+    if (result == EBUSY)
     {
         printf("ERROR: Mutex is locked\n");
         if (pthread_mutex_unlock(mutex) != 0)
         {
-            printf("ERROR: unlock mutex: %s\n");
+            printf("ERROR: unlock mutex\n");
             return ;
         }
         result = pthread_mutex_destroy(mutex);
