@@ -52,12 +52,14 @@ int	parse(t_prog *prog, int argc, char **argv)
 		if (forks[i] == NULL)
 		{
 			printf("ERROR malloc. Fork index: %d\n", i);
-			// free **forks
+			free_forks(forks);
+			return(-1);
 		}
 		if (pthread_mutex_init(forks[i], NULL) != 0)
 		{
 			printf("ERROR pthread_mutex_init. Fork index: %d\n", i);
-			// free **forks
+			free_forks(forks);
+			return (-1);
 		}
 		i++;
 	}
@@ -66,7 +68,9 @@ int	parse(t_prog *prog, int argc, char **argv)
 	t_philo **philos;
 	philos = (t_philo **)malloc(sizeof(t_philo *) * (number_of_philosophers +1));
 	if (!philos)
+	{
 		return (printf("malloc error\n"), -1);
+	}
 	i = 0;
 	while (i <= number_of_philosophers)
 	{
@@ -79,8 +83,10 @@ int	parse(t_prog *prog, int argc, char **argv)
 		philos[i] = malloc(sizeof(t_philo));
 		if (philos[i] == NULL)
 		{
-			// free **philos
+			free_philos(philos);
+			return (printf("malloc error\n"), -1);
 		}
+		philos[i]->i = i + 1;
 		philos[i]->must_eat_times = prog->must_eat_times;
 		philos[i]->time_to_die = prog->time_to_die;
 		philos[i]->time_to_eat = prog->time_to_eat;
@@ -91,20 +97,31 @@ int	parse(t_prog *prog, int argc, char **argv)
 			philos[i]->fork2 = NULL;
 		else
 		{
-			if (i == 0) {
+			if (i == 0)
 				philos[i]->fork2 = forks[number_of_philosophers - 1];
-			}
-			else {
+			else
 				philos[i]->fork2 = forks[i - 1];
-			}
 		}
 		
-		if (pthread_mutex_init(&(philos[i]->phil), NULL) != 0)
+		if (pthread_mutex_init(philos[i]->phil, NULL) != 0)
 		{
 			printf("ERROR pthread_mutex_init Phil index: %d\n", i);
 			// free
 		}
-		philos[i]->i = i + 1;
+
+		philos[i]->phil = malloc(sizeof(pthread_mutex_t));
+		if (philos[i]->phil == NULL)
+		{
+			printf("ERROR malloc. phil phil index: %d\n", i);
+			free_philos(philos);
+			return (-1);
+		}
+		if (pthread_mutex_init(philos[i]->phil, NULL) != 0)
+		{
+			printf("ERROR pthread_mutex_init. Fork index: %d\n", i);
+			free_philos(philos);
+			return (-1);
+		}
 		i++;
 	}
 	printf("----------------\n");

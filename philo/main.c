@@ -35,10 +35,10 @@ void	*create_philosopher(void *arg)
 	if (time_of_creations == -1)
 		return (NULL);	// ? todo free *philo
 	
-	if (pthread_mutex_lock(&philo->phil) != 0)
+	if (pthread_mutex_lock(philo->phil) != 0)
 		return (NULL);	// ? todo free *philo
 	philo->time = time_of_creations;
-	if (pthread_mutex_unlock(&philo->phil) != 0)
+	if (pthread_mutex_unlock(philo->phil) != 0)
 		return (NULL);	// ? todo free *philo
 
 	if (!philo->fork2)
@@ -57,10 +57,10 @@ void	*create_philosopher(void *arg)
 					return (NULL);// ? todo free *philo
 				else if (result == 0)
 					return ((void *)"0");// ? todo free *philo
-				if (pthread_mutex_lock(&philo->phil) != 0)
+				if (pthread_mutex_lock(philo->phil) != 0)
 					return (NULL);	// ? todo free *philo
 				philo->must_eat_times--;
-				if (pthread_mutex_unlock(&philo->phil) != 0)
+				if (pthread_mutex_unlock(philo->phil) != 0)
 					return (NULL);	// ? todo free *philo
 			}
 			return ((void *)"1");// ? todo free *philo
@@ -115,6 +115,7 @@ int	main(int argc, char **argv)
 
 	if (parse(&prog, argc, argv) == -1)
 	{
+		free_prog(&prog);
 		return (EXIT_FAILURE);
 	}
 	int i = 0;
@@ -124,6 +125,7 @@ int	main(int argc, char **argv)
     	printf("creating philosopher: %d\n", prog.philos[i]->i);
 		if (pthread_create(&thread, NULL, create_philosopher, (void *)prog.philos[i]) != 0)
 		{
+			free_prog(&prog);
 			perror("pthread_create");
 			return (EXIT_FAILURE);
     	}
@@ -139,11 +141,13 @@ int	main(int argc, char **argv)
 
 		if (result == -1)
 		{
+			free_prog(&prog);
 			printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
 			//return (EXIT_FAILURE);
 		}
 		else if (result == 0)
 		{
+			free_prog(&prog);
 			printf("Philosopher: %d dead!!!!!\n", prog.philos[i]->i);
 		}
 		i++;
@@ -151,38 +155,7 @@ int	main(int argc, char **argv)
 		
 	printf("END\n");
 	
-	//free prog
-	if (prog.forks)
-	{
-		int i = 0;
-		while (prog.forks[i])
-		{
-			printf("free fork %d\n", i);
-			if (pthread_mutex_destroy(prog.forks[i]) != 0)
-				printf("pthread_mutex_destroy ERROR\n");
-			free(prog.forks[i]);
-			prog.forks[i] = NULL;
-			i++;
-		}
-		free(prog.forks);
-		prog.forks = NULL;
-	}
-	if (prog.philos)
-	{
-		int i = 0;
-		while (prog.philos[i])
-		{
-			if (pthread_mutex_destroy(&(prog.philos[i]->phil)) != 0)
-				printf("pthread_mutex_destroy ERROR\n");
-				
-			printf("free philos %d\n", i);
-			free(prog.philos[i]);
-			prog.philos[i] = NULL;
-			i++;
-		}
-		free(prog.philos);
-		prog.philos = NULL;
-	}
+	free_prog(&prog);
 	return (EXIT_SUCCESS);
 }
 //valgrind --tool=helgrind ./philo 5 800 200 200 3
