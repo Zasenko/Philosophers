@@ -48,3 +48,26 @@ void free_philos(t_philo **philos)
     }
     free(philos);
 }
+
+void destroy_mutex(pthread_mutex_t *mutex)
+{
+    if (!mutex)
+        return ;
+
+    int result = pthread_mutex_destroy(mutex);
+
+    if (result == 16)
+    {
+        printf("ERROR: Mutex is locked\n");
+        if (pthread_mutex_unlock(mutex) != 0)
+        {
+            printf("ERROR: unlock mutex: %s\n");
+            return ;
+        }
+        result = pthread_mutex_destroy(mutex);
+    }
+    if (result != 0)
+        printf("ERROR: destroy mutex\n");
+    else
+        printf("Mutex destroyed\n");
+}
