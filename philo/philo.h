@@ -46,11 +46,12 @@ typedef struct s_prog
 	pthread_mutex_t **forks;
 } t_prog;
 
-int		parse(t_prog *prog, int argc, char **argv);
+int		init_prog(t_prog *prog);
+int 	parse(t_prog *prog, int argc, char **argv);
 int		philo_circle(t_philo *philo);
 long	get_time();
-void free_philos(t_philo **philos);
-void free_forks(pthread_mutex_t **forks);
-void free_prog(t_prog *prog);
+void	free_philos(t_philo **philos);
+void	free_forks(pthread_mutex_t **forks);
+void	free_prog(t_prog *prog);
 
 #endif

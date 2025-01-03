@@ -105,19 +105,11 @@ int	main(int argc, char **argv)
 {
 	t_prog prog;
 
-	prog.number_of_philosophers = 0;
-	prog.time_to_die = 0;
-	prog.must_eat_times = -1;
-	prog.time_to_eat = 0;
-	prog.time_to_sleep = 0;
-	prog.philos = NULL;
-	prog.forks = NULL;
-
-	if (parse(&prog, argc, argv) == -1)
-	{
-		free_prog(&prog);
+	if (!init_prog(&prog))
 		return (EXIT_FAILURE);
-	}
+	if (parse(&prog, argc, argv) == -1)
+		return (free_prog(&prog), EXIT_FAILURE);
+	
 	int i = 0;
 	while (prog.philos[i])
 	{
