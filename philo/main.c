@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/03 14:40:54 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/03 15:19:19 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,80 +103,6 @@ int	wait_results(t_philo *philo)
 	return (1);
 }
 
-int is_phil_dead(t_philo **philos)
-{
-	int i;
-	
-	if (!philos)
-		return (printf("ERROR: is_phil_dead !philo\n"), -1);
-	i = 0;
-	while (philos[i])
-	{
-		pthread_mutex_lock(philos[i]->phil);
-		if ((long)philos[i]->time_to_sleep < philos[i]->time)
-		{
-			// pthread_mutex_lock(philos[i]->print);
-			// printf("Philos %d DEAD!!!!!!!\n", i + 1);
-			// pthread_mutex_unlock(philos[i]->print);
-			return (1);
-		}
-		pthread_mutex_unlock(philos[i]->phil);
-		i++;
-	}
-	return (0);
-}
-
-int is_all_phils_eat(t_philo **philos)
-{
-	int i;
-	
-	if (!philos)
-		return (printf("ERROR: is_all_phils_eat !philo\n"), -1);
-	i = 0;
-	while (philos[i])
-	{
-		pthread_mutex_lock(philos[i]->print);
-    	printf("check is_all_phils_eat: %d\n", i);
-		pthread_mutex_unlock(philos[i]->print);
-
-		
-		pthread_mutex_lock(philos[i]->phil);
-		if (philos[i]->must_eat_times != 0)
-		{
-			pthread_mutex_unlock(philos[i]->phil);
-			return (0);
-		}
-		pthread_mutex_unlock(philos[i]->phil);
-		i++;
-	}
-	return (1);
-}
-
-int	check(t_prog *prog)
-{
-	if (!prog)
-		return (printf("ERROR wait_results: !philo\n"), -1);
-	
-	// while (1)
-	// check if someome is dead -> all should dead
-	// if all philos have eaten -> finish
-	while(1)
-	{
-		int eat_result = is_all_phils_eat(prog->philos);
-		int dead_result = is_phil_dead(prog->philos);
-
-		if (eat_result == -1 || dead_result == -1)
-			return (printf("ERROR check: eat_result || dead_result\n"), -1);
-		
-		if (dead_result)
-			return (0);
-		if (eat_result)
-			return (1);
-		usleep(5);
-	}
-	return -1;
-}
-
 int	main(int argc, char **argv)
 {
 	t_prog prog;
@@ -221,6 +147,15 @@ int	main(int argc, char **argv)
 		pthread_mutex_lock(prog.print);
 		printf("Someone dead\n");
 		pthread_mutex_unlock(prog.print);
+		int i = 0;
+		while(prog.philos[i])
+		{
+			pthread_mutex_lock(prog.philos[i]->phil);
+			prog.philos[i]->is_dead = 1;
+			pthread_mutex_unlock(prog.philos[i]->phil);
+			
+			i++;
+		}
 		//return (free_prog(&prog), EXIT_SUCCESS);
 	}
 	else

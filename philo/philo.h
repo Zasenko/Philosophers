@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/03 13:10:07 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/03 15:18:09 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct s_philo
 	pthread_mutex_t	*print;
 	pthread_t thread;
 	long time;
+	int	is_dead;
 } t_philo;
 
 typedef struct s_prog
@@ -49,12 +50,13 @@ typedef struct s_prog
 } t_prog;
 
 int		init_prog(t_prog *prog);
-int 	parse(t_prog *prog, int argc, char **argv);
+int		parse(t_prog *prog, int argc, char **argv);
 int		philo_circle(t_philo *philo);
 long	get_time();
 void	free_philos(t_philo **philos);
 void	free_forks(pthread_mutex_t **forks);
 void	free_prog(t_prog *prog);
 void	destroy_mutex(pthread_mutex_t *mutex);
+int		check(t_prog *prog);
 
 #endif

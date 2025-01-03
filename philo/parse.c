@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 12:19:47 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/03 13:11:26 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/03 15:18:26 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ int	parse(t_prog *prog, int argc, char **argv)
 			return (printf("malloc error\n"), -1);
 		}
 		philos[i]->i = i + 1;
+		philos[i]->is_dead = 0;
 		philos[i]->must_eat_times = prog->must_eat_times;
 		philos[i]->time_to_die = prog->time_to_die;
 		philos[i]->time_to_eat = prog->time_to_eat;
