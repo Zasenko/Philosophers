@@ -78,18 +78,31 @@ int	eating(t_philo *philo)
 	pthread_mutex_lock(philo->print);
 	printf("%ld %d is eating\n", time, philo->i);
 	pthread_mutex_unlock(philo->print);
-
 	usleep(philo->time_to_eat * 1000);
 
-	if (pthread_mutex_unlock(philo->fork1) != 0)
-		return (perror("pthread_mutex_unlock error"), -1);
+	if (philo->i % 2 == 0 || philo->i == 1) // todo check  philo->i == 1?
+	{
+		if (pthread_mutex_unlock(philo->fork2) != 0)
+			return (perror("pthread_mutex_unlock error"), -1);
+		if (pthread_mutex_unlock(philo->fork1) != 0)
+			return (perror("pthread_mutex_unlock error"), -1);
+	}
+	else
+	{
+		if (pthread_mutex_unlock(philo->fork1) != 0)
+			return (perror("pthread_mutex_unlock error"), -1);
+		if (pthread_mutex_unlock(philo->fork2) != 0)
+			return (perror("pthread_mutex_unlock error"), -1);
+	}
+	// if (pthread_mutex_unlock(philo->fork1) != 0)
+	// 	return (perror("pthread_mutex_unlock error"), -1);
 
 	// pthread_mutex_lock(philo->print);
 	// printf("Philo %d put fork 1\n", philo->i);//DELETE
 	// pthread_mutex_unlock(philo->print);
 	
-	if (pthread_mutex_unlock(philo->fork2) != 0)
-		return (perror("pthread_mutex_unlock error"), -1);
+	// if (pthread_mutex_unlock(philo->fork2) != 0)
+	// 	return (perror("pthread_mutex_unlock error"), -1);
 
 	// pthread_mutex_lock(philo->print);
 	// printf("Philo %d put fork 2\n", philo->i);//DELETE
@@ -108,7 +121,7 @@ int	sleeping(t_philo *philo)
 	if (time == -1)
 		return (-1);
 	pthread_mutex_lock(philo->print);
-	printf("%ld %d is sleeping\n",time , philo->i);
+	printf("%ld %d is sleeping\n", time, philo->i);
 	pthread_mutex_unlock(philo->print);
 	usleep(philo->time_to_sleep * 1000);
 	return (1);

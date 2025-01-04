@@ -24,21 +24,21 @@ long get_time()
 void	*create_philosopher(void *arg)
 {
 	t_philo	*philo;
-	long	time_of_creations;
+//	long	time_of_creations;
 	
 	philo = (t_philo *)arg;
 	if (!philo)
 		return (NULL);
 	if (!philo->fork1)
 		return (NULL);// ? todo free *philo
-	time_of_creations = get_time();
-	if (time_of_creations == -1)
-		return (NULL);	// ? todo free *philo
-	if (pthread_mutex_lock(philo->phil) != 0)
-		return (NULL);	// ? todo free *philo
-	philo->time = time_of_creations;
-	if (pthread_mutex_unlock(philo->phil) != 0)
-		return (NULL); // ? todo free *philo // how to unlock phil ahaha ????
+	// time_of_creations = get_time();
+	// if (time_of_creations == -1)
+	// 	return (NULL);	// ? todo free *philo
+	// if (pthread_mutex_lock(philo->phil) != 0)
+	// 	return (NULL);	// ? todo free *philo
+	// philo->time = time_of_creations;
+	// if (pthread_mutex_unlock(philo->phil) != 0)
+	// 	return (NULL); // ? todo free *philo // how to unlock phil ahaha ????
 
 	if (!philo->fork2)
 	{
@@ -61,6 +61,9 @@ void	*create_philosopher(void *arg)
 				philo->must_eat_times--;
 				if (pthread_mutex_unlock(philo->phil) != 0)
 					return (NULL); // ? todo free *philo // how to unlock if error?
+				pthread_mutex_lock(philo->print);												// DELETE
+				printf("--- Philo %d must_eat_times %d---\n", philo->i, philo->must_eat_times); // DELETE
+				pthread_mutex_unlock(philo->print);												// DELETE
 			}
 			return ((void *)"1");// ? todo free *philo
 		}
@@ -127,11 +130,6 @@ int	main(int argc, char **argv)
 		prog.philos[i]->thread = thread;
 		i++;
 	}
-
-	// wait result
-	// while (1)
-	// check if someome is dead -> all should dead
-	// if all philos have eaten -> finish
 
 	int	check_result = check(&prog);
 	if (check_result == -1)

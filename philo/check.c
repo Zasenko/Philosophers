@@ -49,12 +49,12 @@ static int is_phil_dead(t_philo **philos)
 	i = 0;
 	while (philos[i])
 	{
-		pthread_mutex_lock(philos[i]->phil);
 
+		pthread_mutex_lock(philos[i]->phil);
 		long now = get_time();
 		if (now == -1)
 			return -1;
-		if (now - philos[i]->time >= (long)philos[i]->time_to_die)
+		if (now - philos[i]->time > (long)philos[i]->time_to_die)
 		{
 			pthread_mutex_lock(philos[i]->print);
 			printf("CHECKER - Philos %d DEAD!!!!!!!\n", i + 1);
@@ -62,11 +62,10 @@ static int is_phil_dead(t_philo **philos)
 			printf("philos.time: %ld\n", philos[i]->time);
 			printf("now time: %ld\n", now);
 			printf("WHY DEAD now - philos.time: %ld\n", now - philos[i]->time);
-
 			printf("MAX displayes time: %ld\n", philos[i]->time + (long)philos[i]->time_to_die);
-			printf("print different: %ld\n", philos[i]->time + (long)philos[i]->time_to_die - now);
-
+			printf("print different (if > 10 error): %ld\n", now - philos[i]->time - (long)philos[i]->time_to_die);
 			pthread_mutex_unlock(philos[i]->print);
+
 			pthread_mutex_unlock(philos[i]->phil);
 			return (1);
 		}
