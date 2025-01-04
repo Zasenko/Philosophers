@@ -78,22 +78,22 @@ int	eating(t_philo *philo)
 	pthread_mutex_lock(philo->print);
 	printf("%ld %d is eating\n", time, philo->i);
 	pthread_mutex_unlock(philo->print);
-	
-	usleep(philo->time_to_eat); // !!! todo usleep in microsecond /  time_to_eat in milliseconds ///  * 1000 ?
+
+	usleep(philo->time_to_eat * 1000);
 
 	if (pthread_mutex_unlock(philo->fork1) != 0)
 		return (perror("pthread_mutex_unlock error"), -1);
 
-	pthread_mutex_lock(philo->print);
-	printf("Philo %d put fork 1\n", philo->i);//DELETE
-	pthread_mutex_unlock(philo->print);
+	// pthread_mutex_lock(philo->print);
+	// printf("Philo %d put fork 1\n", philo->i);//DELETE
+	// pthread_mutex_unlock(philo->print);
 	
 	if (pthread_mutex_unlock(philo->fork2) != 0)
 		return (perror("pthread_mutex_unlock error"), -1);
 
-	pthread_mutex_lock(philo->print);
-	printf("Philo %d put fork 2\n", philo->i);//DELETE
-	pthread_mutex_unlock(philo->print);
+	// pthread_mutex_lock(philo->print);
+	// printf("Philo %d put fork 2\n", philo->i);//DELETE
+	// pthread_mutex_unlock(philo->print);
 	
 	return (1);
 }
@@ -110,7 +110,7 @@ int	sleeping(t_philo *philo)
 	pthread_mutex_lock(philo->print);
 	printf("%ld %d is sleeping\n",time , philo->i);
 	pthread_mutex_unlock(philo->print);
-	usleep(philo->time_to_sleep);
+	usleep(philo->time_to_sleep * 1000);
 	return (1);
 }
 
@@ -134,7 +134,7 @@ int	philo_circle(t_philo *philo)
 {
 	int	take_result;
 	int	eating_result;
-	//int	sleeping_result;
+	int	sleeping_result;
 	
 	if (!philo)
 		return (-1);
@@ -148,13 +148,13 @@ int	philo_circle(t_philo *philo)
 		return (-1);
 	else if (eating_result == 0)
 		return (0);
-	// sleeping_result = sleeping(philo);
-	// if (sleeping_result == -1)
-	// 	return (-1);
-	// else if (sleeping_result == 0)
-	// 	return (0);
-	// if (thinking(philo) == -1)
-	// 	return (-1);
+	sleeping_result = sleeping(philo);
+	if (sleeping_result == -1)
+		return (-1);
+	else if (sleeping_result == 0)
+		return (0);
+	if (thinking(philo) == -1)
+		return (-1);
 	return (1);
 }
 

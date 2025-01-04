@@ -24,9 +24,9 @@
 typedef struct s_philo
 {
 	int	i;
-	int	time_to_die;
-	int	time_to_eat;
-	int	time_to_sleep;
+	int time_to_die;   // in milliseconds
+	int time_to_eat;   // in milliseconds
+	int time_to_sleep; // in milliseconds
 	int	must_eat_times;
 	pthread_mutex_t *fork1;
 	pthread_mutex_t *fork2;
@@ -34,6 +34,8 @@ typedef struct s_philo
 	pthread_mutex_t	*print;
 	pthread_t thread;
 	long time;
+	// long time_of_creation;
+	// long leat_meal_time;
 	int	is_dead;
 } t_philo;
 

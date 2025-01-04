@@ -18,8 +18,8 @@ long get_time()
 
 	if (gettimeofday(&tv, NULL) == -1)
 		return (perror("gettimeofday error"), -1);
-	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-}
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+} // in milliseconds
 
 void	*create_philosopher(void *arg)
 {
@@ -34,7 +34,6 @@ void	*create_philosopher(void *arg)
 	time_of_creations = get_time();
 	if (time_of_creations == -1)
 		return (NULL);	// ? todo free *philo
-	
 	if (pthread_mutex_lock(philo->phil) != 0)
 		return (NULL);	// ? todo free *philo
 	philo->time = time_of_creations;
@@ -116,9 +115,9 @@ int	main(int argc, char **argv)
 	while (prog.philos[i])
 	{
 		pthread_t thread;
-		pthread_mutex_lock(prog.print);
-    	printf("creating philosopher: %d\n", prog.philos[i]->i);
-		pthread_mutex_unlock(prog.print);
+		// pthread_mutex_lock(prog.print);
+    	// printf("creating philosopher: %d\n", prog.philos[i]->i);
+		// pthread_mutex_unlock(prog.print);
 		if (pthread_create(&thread, NULL, create_philosopher, (void *)prog.philos[i]) != 0)
 		{
 			free_prog(&prog);

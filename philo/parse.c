@@ -25,9 +25,9 @@ int	parse(t_prog *prog, int argc, char **argv)
 	number_of_philosophers = atoi(argv[1]);	//todo atoi
 	if (number_of_philosophers < 1)
 		return (printf("Wrong philosophers count. It should be > 0\n"), -1);
-	prog->time_to_die = atoi(argv[2]);//todo atoi
-	prog->time_to_eat = atoi(argv[3]);//todo atoi
-	prog->time_to_sleep = atoi(argv[4]);//todo atoi
+	prog->time_to_die = atoi(argv[2]); // todo atoi
+	prog->time_to_eat = atoi(argv[3]); // todo atoi
+	prog->time_to_sleep = atoi(argv[4]); // todo atoi
 	if (argc == 6)
 	{
 		prog->must_eat_times = atoi(argv[5]);//todo atoi
@@ -92,7 +92,11 @@ int	parse(t_prog *prog, int argc, char **argv)
 		philos[i]->time_to_die = prog->time_to_die;
 		philos[i]->time_to_eat = prog->time_to_eat;
 		philos[i]->time_to_sleep = prog->time_to_sleep;
-		philos[i]->time = -1;
+
+		long now = get_time();
+		if (now == -1)
+			return (free_philos(philos), -1);
+		philos[i]->time = now;
 		philos[i]->fork1 = forks[i];
 		if (number_of_philosophers == 1)
 			philos[i]->fork2 = NULL;
