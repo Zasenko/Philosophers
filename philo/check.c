@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 15:07:14 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/03 15:08:34 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/04 14:37:05 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,24 +17,58 @@ static int is_all_phils_eat(t_philo **philos);
 
 int check(t_prog *prog)
 {
-	if (!prog)
+	if (!prog || !prog->philos)
 		return (printf("ERROR wait_results: !philo\n"), -1);
 	
 	// while (1)
 	// check if someome is dead -> all should dead
 	// if all philos have eaten -> finish
+
+	void *results[prog->number_of_philosophers];
+	
+	int i = 0;
+	while (i < prog->number_of_philosophers)
+	{
+		if (!prog->philos[i])
+			return (printf("check ERROR: no philo %d\n", i + 1), -1);
+		if (pthread_join(prog->philos[i], results[i]) != 0)
+			return (printf("check ERROR: pthread_join %d\n", i), -1);
+		i++;
+	}
+	
 	while(1)
 	{
-		int eat_result = is_all_phils_eat(prog->philos);
-		int dead_result = is_phil_dead(prog->philos);
+		i = 0;
+		while(i < prog->number_of_philosophers)
+		{
+			if ((char *)results[i] == "0")
+			{
+				printf("Result %d NULL\n", i);
+				return (0);
+			}
+			i++;
+		}
+		i = 0;
+		while(i < prog->number_of_philosophers)
+		{
+			if ((char *)results[i] == 1)
+				i++;
+			else
+		}
+		return (0);
 
-		if (eat_result == -1 || dead_result == -1)
-			return (printf("ERROR check: eat_result || dead_result\n"), -1);
+		// int eat_result = is_all_phils_eat(prog->philos);
+		// int dead_result = is_phil_dead(prog->philos);
+
+		// // todo check results! or error :) int	wait_results(t_philo *philo)
+
+		// if (eat_result == -1 || dead_result == -1)
+		// 	return (printf("ERROR check: eat_result || dead_result\n"), -1);
 		
-		if (dead_result)
-			return (0);
-		if (eat_result)
-			return (1);
+		// if (dead_result)
+		// 	return (0);
+		// if (eat_result)
+		// 	return (1);
 		usleep(10 * 1000);
 	}
 	return -1;
