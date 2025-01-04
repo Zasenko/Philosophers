@@ -66,18 +66,21 @@ void free_philos(t_philo **philos)
         {
             destroy_mutex(philos[i]->fork1);
             free(philos[i]->fork1);
+            philos[i]->fork1 = NULL;
         }
 
         if (philos[i]->fork2)
         {
             destroy_mutex(philos[i]->fork2);
             free(philos[i]->fork2);
+            philos[i]->fork2 = NULL;
         }
 
         if (philos[i]->print)
         {
             destroy_mutex(philos[i]->print);
             free(philos[i]->print);
+            philos[i]->print = NULL;
         }
         printf("free philos %d\n", i);
         free(philos[i]);

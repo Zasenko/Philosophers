@@ -12,48 +12,66 @@
 
 #include "philo.h"
 
+int check_if_dead(t_philo *philo)
+{
+	if (!philo)
+		return (-1);
+	pthread_mutex_lock(philo->phil);
+	if (philo->is_dead == 1)
+		return (pthread_mutex_unlock(philo->phil), 1);
+	pthread_mutex_unlock(philo->phil);
+	return (0);
+}
+
 int	take_forks(t_philo *philo)
 {
 	long	time;
 
 	if (!philo)
 		return (-1);
-	time = get_time();
-	if (time == -1)
+	int death_res = check_if_dead(philo);
+	if (death_res == -1)
 		return (-1);
+	else if (death_res)
+		return (0);
 	if (philo->i % 2 != 0)
 	{
 		if (pthread_mutex_lock(philo->fork1) != 0)
 			return (perror("pthread_mutex_lock error"), -1);
-
+		time = get_time();
+		if (time == -1)
+			return (-1);
 		pthread_mutex_lock(philo->print);
 		printf("%ld %d has taken a fork 1\n", time, philo->i);
 		pthread_mutex_unlock(philo->print);
-		
+
 		if (pthread_mutex_lock(philo->fork2) != 0)
 			return (perror("pthread_mutex_lock error"), -1); // todo unlock fork1
-
+		time = get_time();
+		if (time == -1)
+			return (-1);
 		pthread_mutex_lock(philo->print);
 		printf("%ld %d has taken a fork 2\n", time, philo->i);
 		pthread_mutex_unlock(philo->print);
-
 	}
 	else
 	{
 		if (pthread_mutex_lock(philo->fork2) != 0)
 			return (perror("pthread_mutex_lock error"), -1);
-		
+		time = get_time();
+		if (time == -1)
+			return (-1);
 		pthread_mutex_lock(philo->print);
 		printf("%ld %d has taken a fork 2\n", time, philo->i);
 		pthread_mutex_unlock(philo->print);
-
 		if (pthread_mutex_lock(philo->fork1) != 0)
 			return (perror("pthread_mutex_lock error"), -1); // todo unlock fork2
-
+		time = get_time();
+		if (time == -1)
+			return (-1);
 		pthread_mutex_lock(philo->print);
 		printf("%ld %d has taken a fork 1\n", time, philo->i);
 		pthread_mutex_unlock(philo->print);
-
 	}
 	return (1);
 }
@@ -67,7 +85,11 @@ int	eating(t_philo *philo)
 	time = get_time();
 	if (time == -1)
 		return (-1);
-
+	int death_res = check_if_dead(philo);
+	if (death_res == -1)
+		return (-1);
+	else if (death_res)
+		return (0);
 	if (pthread_mutex_lock(philo->phil) != 0)
 		return (-1);
 	philo->time = time;
@@ -114,6 +136,11 @@ int	sleeping(t_philo *philo)
 	
 	if (!philo)
 		return (-1);
+	int death_res = check_if_dead(philo);
+	if (death_res == -1)
+		return (-1);
+	else if (death_res)
+		return (0);
 	time = get_time();
 	if (time == -1)
 		return (-1);
@@ -133,7 +160,11 @@ int	thinking(t_philo *philo)
 	time = get_time();
 	if (time == -1)
 		return (-1);
-
+	int death_res = check_if_dead(philo);
+	if (death_res == -1)
+		return (-1);
+	else if (death_res)
+		return (0);
 	pthread_mutex_lock(philo->print);
 	printf("%ld %d is thinking\n",time , philo->i);
 	pthread_mutex_unlock(philo->print);
@@ -148,6 +179,7 @@ int	philo_circle(t_philo *philo)
 	
 	if (!philo)
 		return (-1);
+	
 	take_result = take_forks(philo);
 	if (take_result == -1)
 		return (-1);
