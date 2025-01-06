@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 10:31:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/04 14:03:01 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/06 14:20:25 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int	eating(t_philo *philo)
 	printf("%ld %d is eating\n", time, philo->i);
 	pthread_mutex_unlock(philo->print);
 	usleep(philo->time_to_eat * 1000);
-	if (philo->i % 2 == 0) // todo check   philo->i == 1?
+	if (philo->i % 2 == 0 || (philo->i == 0 && (philo->number_of_philosophers % 2 != 0))) // todo check   philo->i == 1?
 	{
 		if (pthread_mutex_unlock(philo->fork2) != 0)
 			return (perror("pthread_mutex_unlock error"), -1);

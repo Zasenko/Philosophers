@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/06 13:55:18 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/06 14:23:44 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,21 +24,21 @@ long get_time()
 void	*create_philosopher(void *arg)
 {
 	t_philo	*philo;
-//	long	time_of_creations;
+	long	time_of_creations;
 	
 	philo = (t_philo *)arg;
 	if (!philo)
 		return (NULL);
 	if (!philo->fork1)
 		return (NULL);// ? todo free *philo
-	// time_of_creations = get_time();
-	// if (time_of_creations == -1)
-	// 	return (NULL);	// ? todo free *philo
-	// if (pthread_mutex_lock(philo->phil) != 0)
-	// 	return (NULL);	// ? todo free *philo
-	// philo->time = time_of_creations;
-	// if (pthread_mutex_unlock(philo->phil) != 0)
-	// 	return (NULL); // ? todo free *philo // how to unlock phil ahaha ????
+	time_of_creations = get_time();
+	if (time_of_creations == -1)
+		return (NULL);	// ? todo free *philo
+	if (pthread_mutex_lock(philo->phil) != 0)
+		return (NULL);	// ? todo free *philo
+	philo->time = time_of_creations;
+	if (pthread_mutex_unlock(philo->phil) != 0)
+		return (NULL); // ? todo free *philo // how to unlock phil ahaha ????
 
 	if (!philo->fork2)
 	{

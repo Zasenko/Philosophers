@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 12:19:47 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/03 15:18:26 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/06 14:18:57 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ int	parse(t_prog *prog, int argc, char **argv)
 		philos[i]->time_to_die = prog->time_to_die;
 		philos[i]->time_to_eat = prog->time_to_eat;
 		philos[i]->time_to_sleep = prog->time_to_sleep;
+		philos[i]->number_of_philosophers = prog->number_of_philosophers;
 
 		long now = get_time();
 		if (now == -1)

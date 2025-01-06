@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/06 13:47:00 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/06 14:18:22 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef struct s_philo
 	int time_to_eat;   // in milliseconds
 	int time_to_sleep; // in milliseconds
 	int	must_eat_times;
+	int 	number_of_philosophers;
 	pthread_mutex_t *fork1;
 	pthread_mutex_t *fork2;
 	pthread_mutex_t *phil;
