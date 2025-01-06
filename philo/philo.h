@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/03 15:18:09 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/06 13:47:00 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ int		init_prog(t_prog *prog);
 int		parse(t_prog *prog, int argc, char **argv);
 int		philo_circle(t_philo *philo);
 long	get_time();
+void	free_phil(t_philo *phil);
 void	free_philos(t_philo **philos);
 void	free_forks(pthread_mutex_t **forks);
 void	free_prog(t_prog *prog);

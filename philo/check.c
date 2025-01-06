@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 15:07:14 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/04 14:37:05 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/06 13:35:14 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,8 +114,5 @@ static int is_all_phils_eat(t_philo **philos)
 		pthread_mutex_unlock(philos[i]->phil);
 		i++;
 	}
-	pthread_mutex_lock(philos[i]->print);
-	printf("CHECKER: All philos eat\n");
-	pthread_mutex_unlock(philos[i]->print);
 	return (1);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dzasenko <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 13:29:27 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/03 13:29:30 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/06 14:05:50 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,33 +61,75 @@ void free_philos(t_philo **philos)
             destroy_mutex(philos[i]->phil);
             free(philos[i]->phil);
         }
-
-        if (philos[i]->fork1)
+        if (pthread_detach(philos[i]->thread) != 0)
         {
-            destroy_mutex(philos[i]->fork1);
-            free(philos[i]->fork1);
-            philos[i]->fork1 = NULL;
+            perror("Не удалось отсоединить поток");
+            return;
         }
+    
 
-        if (philos[i]->fork2)
-        {
-            destroy_mutex(philos[i]->fork2);
-            free(philos[i]->fork2);
-            philos[i]->fork2 = NULL;
-        }
+        // if (philos[i]->fork1)
+        // {
+        //     destroy_mutex(philos[i]->fork1);
+        //     free(philos[i]->fork1);
+        //     philos[i]->fork1 = NULL;
+        // }
 
-        if (philos[i]->print)
-        {
-            destroy_mutex(philos[i]->print);
-            free(philos[i]->print);
-            philos[i]->print = NULL;
-        }
+        // if (philos[i]->fork2)
+        // {
+        //     destroy_mutex(philos[i]->fork2);
+        //     free(philos[i]->fork2);
+        //     philos[i]->fork2 = NULL;
+        // }
+
+        // if (philos[i]->print)
+        // {
+        //     printf("free print\n");
+        //     destroy_mutex(philos[i]->print);
+        //     free(philos[i]->print);
+        //     philos[i]->print = NULL;
+        // }
         printf("free philos %d\n", i);
         free(philos[i]);
         philos[i] = NULL;
         i++;
     }
     free(philos);
+}
+
+//TODO delete
+void free_phil(t_philo *phil)
+{
+
+    if (!phil)
+        return ;
+
+    if (phil->phil)
+    {
+        destroy_mutex(phil->phil);
+        free(phil->phil);
+    }
+    if (phil->fork1)
+    {
+        destroy_mutex(phil->fork1);
+        free(phil->fork1);
+        phil->fork1 = NULL;
+    }
+    if (phil->fork2)
+    {
+        destroy_mutex(phil->fork2);
+        free(phil->fork2);
+        phil->fork2 = NULL;
+    }
+    if (phil->print)
+    {
+        printf("free print\n");
+        destroy_mutex(phil->print);
+        free(phil->print);
+        phil->print = NULL;
+    }
+    printf("free philos %d\n", phil->i);
+    free(phil);
 }
 
 void destroy_mutex(pthread_mutex_t *mutex)
@@ -99,7 +141,7 @@ void destroy_mutex(pthread_mutex_t *mutex)
 
     if (result == EBUSY)
     {
-        printf("ERROR: Mutex is locked\n");
+        printf("ERROR: Mutex is locked. UNLOCKING\n");
         if (pthread_mutex_unlock(mutex) != 0)
         {
             printf("ERROR: unlock mutex\n");
