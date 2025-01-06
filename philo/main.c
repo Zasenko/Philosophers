@@ -68,13 +68,13 @@ void	*create_philosopher(void *arg)
 				must_eat_times--;
 				if (pthread_mutex_unlock(philo->phil) != 0)
 					return (NULL);
-				pthread_mutex_lock(philo->print);												// DELETE
-				printf("--- Philo %d must_eat_times %d---\n", philo->i, philo->must_eat_times); // DELETE
-				pthread_mutex_unlock(philo->print);												// DELETE
+				// pthread_mutex_lock(philo->print);												// DELETE
+				// printf("--- Philo %d must_eat_times %d---\n", philo->i, philo->must_eat_times); // DELETE
+				// pthread_mutex_unlock(philo->print);												// DELETE
 			}
-			pthread_mutex_lock(philo->print);												// DELETE
-			printf("--- create_philosopher PHILO EATED---\n");			// DELETE
-			pthread_mutex_unlock(philo->print);
+			// pthread_mutex_lock(philo->print);												// DELETE
+			// printf("--- create_philosopher PHILO EATED---\n");			// DELETE
+			// pthread_mutex_unlock(philo->print);
 			return ((void *)"1");// ? todo free *philo
 		}
 		else
@@ -154,20 +154,9 @@ int	main(int argc, char **argv)
 		pthread_mutex_lock(prog.print);
 		printf("Someone dead\n");//todo delete
 		pthread_mutex_unlock(prog.print);
-	//	int i = 0;
-		// while(prog.philos[i])
-		// {
-		// 	pthread_mutex_lock(prog.philos[i]->phil);
-		// 	prog.philos[i]->is_dead = 1;
-		// 	pthread_mutex_unlock(prog.philos[i]->phil);
-			
-		// 	i++;
-		// }
-		//return (free_prog(&prog), EXIT_SUCCESS);
 	}
 	else
 	{
-		//return (free_prog(&prog), EXIT_SUCCESS);
 		pthread_mutex_lock(prog.print);
 		printf("All eat\n");
 		pthread_mutex_unlock(prog.print);
