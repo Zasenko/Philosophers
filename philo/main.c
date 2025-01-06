@@ -92,28 +92,28 @@ void	*create_philosopher(void *arg)
 	return (NULL);// ? todo free *philo
 }
 
-// int	wait_results(void *philo, int res)
-// {
-// 	void *result;
+int	wait_results(t_philo *philo)
+{
+	void *result;
 	
-// 	if (!philo)
-// 		return (printf("ERROR wait_results: !philo\n"), -1);
+	if (!philo)
+		return (printf("ERROR wait_results: !philo\n"), -1);
 	
-// 	if (pthread_join(philo->thread, &result) != 0)
-// 		return (perror("ERROR pthread_join \n"), -1);
-// 	if (result == NULL)
-// 	{
-// 		printf("Result %d NULL\n", philo->i);
-// 		return (-1);
-// 	}
-// 	else
-// 	{
-// 		pthread_mutex_lock(philo->print);
-// 		printf("Result %d: %s\n", philo->i, (char *)result);
-// 		pthread_mutex_unlock(philo->print);
-// 	}
-// 	return (1);
-// }
+	if (pthread_join(philo->thread, &result) != 0)
+		return (perror("ERROR pthread_join \n"), -1);
+	if (result == NULL)
+	{
+		printf("Result %d NULL\n", philo->i);
+		return (-1);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->print);
+		printf("Result %d: %s\n", philo->i, (char *)result);
+		pthread_mutex_unlock(philo->print);
+	}
+	return (1);
+}
 
 int	main(int argc, char **argv)
 {
@@ -152,7 +152,7 @@ int	main(int argc, char **argv)
 	else if (check_result == 0)
 	{
 		pthread_mutex_lock(prog.print);
-		printf("Someone dead\n");
+		printf("Someone dead\n");//todo delete
 		pthread_mutex_unlock(prog.print);
 	//	int i = 0;
 		// while(prog.philos[i])
@@ -174,26 +174,26 @@ int	main(int argc, char **argv)
 	}
 	
 	// remove!
-	// i = 0;
-	// while (prog.philos[i])
-	// {
-	// 	int result = wait_results(prog.philos[i]);
-	// 	if (result == -1)
-	// 	{
-	// 		free_prog(&prog);
-	// 		pthread_mutex_lock(prog.print);
-	// 		printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
-	// 		pthread_mutex_unlock(prog.print);
-	// 		//return (EXIT_FAILURE);
-	// 	}
-	// 	else if (result == 0)
-	// 	{
-	// 		pthread_mutex_lock(prog.print);
-	// 		printf("Philosopher: %d dead!!!!!\n", prog.philos[i]->i);
-	// 		pthread_mutex_unlock(prog.print);
-	// 	}
-	// 	i++;
-	// }
+	i = 0;
+	while (prog.philos[i])
+	{
+		int result = wait_results(prog.philos[i]);
+		if (result == -1)
+		{
+			free_prog(&prog);
+			pthread_mutex_lock(prog.print);
+			printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
+			pthread_mutex_unlock(prog.print);
+			//return (EXIT_FAILURE);
+		}
+		else if (result == 0)
+		{
+			pthread_mutex_lock(prog.print);
+			printf("Philosopher: %d dead!!!!!\n", prog.philos[i]->i);
+			pthread_mutex_unlock(prog.print);
+		}
+		i++;
+	}
 	//
 	pthread_mutex_lock(prog.print);
 	printf("END\n");
