@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 12:19:47 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/06 14:18:57 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/08 10:59:31 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,24 +108,51 @@ int	parse(t_prog *prog, int argc, char **argv)
 			else
 				philos[i]->fork2 = forks[i - 1];
 		}
-		
-		philos[i]->phil = malloc(sizeof(pthread_mutex_t));
-		if (philos[i]->phil == NULL)
+		philos[i]->must_eat_times_mutex = malloc(sizeof(pthread_mutex_t));
+		if (philos[i]->must_eat_times_mutex == NULL)
 		{
-			printf("ERROR malloc. phil phil index: %d\n", i);
+			printf("ERROR malloc. phil must_eat_times_mutex index: %d\n", i);
 			free_philos(philos);
 			return (-1);
 		}
-		if (pthread_mutex_init(philos[i]->phil, NULL) != 0)
+		if (pthread_mutex_init(philos[i]->must_eat_times_mutex, NULL) != 0)
 		{
+			// todo free must eat time ///
 			printf("ERROR pthread_mutex_init. Fork index: %d\n", i);
+			free_philos(philos);
+			return (-1);
+		}
+		philos[i]->time_mutex = malloc(sizeof(pthread_mutex_t));
+		if (philos[i]->time_mutex == NULL)
+		{
+			printf("ERROR malloc. phil time_mutex index: %d\n", i);
+			free_philos(philos);
+			return (-1);
+		}
+		if (pthread_mutex_init(philos[i]->time_mutex, NULL) != 0)
+		{
+			// todo free must eat time ///
+			printf("ERROR pthread_mutex_init phil time_mutex %d\n", i);
+			free_philos(philos);
+			return (-1);
+		}
+		philos[i]->is_dead_mutex = malloc(sizeof(pthread_mutex_t));
+		if (philos[i]->is_dead_mutex == NULL)
+		{
+			printf("ERROR malloc. phil is_dead_mutex index: %d\n", i);
+			free_philos(philos);
+			return (-1);
+		}
+		if (pthread_mutex_init(philos[i]->is_dead_mutex, NULL) != 0)
+		{
+			// todo free must eat time ///
+			printf("ERROR pthread_mutex_init phil is_dead_mutex %d\n", i);
 			free_philos(philos);
 			return (-1);
 		}
 		philos[i]->print = prog->print;
 		i++;
 	}
-	printf("----------------\n");
 	prog->philos = philos;
 	return (1);
 }

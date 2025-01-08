@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/07 13:03:35 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/08 10:58:16 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,16 @@ typedef struct s_philo
 	int time_to_eat;   // in milliseconds
 	int time_to_sleep; // in milliseconds
 	int	must_eat_times;
-	int 	number_of_philosophers;
+	pthread_mutex_t *must_eat_times_mutex;
+	int 	number_of_philosophers;//todo delete
 	pthread_mutex_t *fork1;
 	pthread_mutex_t *fork2;
-	pthread_mutex_t *phil;
 	pthread_mutex_t	*print;
 	pthread_t thread;
 	long time;
+	pthread_mutex_t *time_mutex;
 	int	is_dead;
+	pthread_mutex_t *is_dead_mutex;
 } t_philo;
 
 typedef struct s_prog

@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 13:29:27 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/07 10:05:32 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/08 11:05:03 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void free_prog(t_prog *prog)
     prog->philos = NULL;
     if (prog->print)
     {
-        printf("destroy_mutex print\n");
+        printf("destroy_mutex prog->print\n");
         destroy_mutex(prog->print);
         free(prog->print);
         prog->print = NULL;
@@ -57,19 +57,27 @@ void free_philos(t_philo **philos)
     i = 0;
     while (philos[i])
     {
-        if (philos[i]->phil)
+        if (philos[i]->must_eat_times_mutex)
         {
-            printf("destroy_mutex phil %d -> phil\n", philos[i]->i);
-            destroy_mutex(philos[i]->phil);
-            free(philos[i]->phil);
+            printf("destroy_mutex phil %d -> must_eat_times_mutex\n", philos[i]->i);
+            destroy_mutex(philos[i]->must_eat_times_mutex);
+            free(philos[i]->must_eat_times_mutex);
+            philos[i]->must_eat_times_mutex = NULL;
         }
-        printf("destroy pthread phil %d -> thread\n", philos[i]->i);
-
-        // if (pthread_detach(philos[i]->thread) != 0)
-        // {
-        //     perror("Не удалось отсоединить поток");
-        //     return;
-        // }
+        if (philos[i]->time_mutex)
+        {
+            printf("destroy_mutex phil %d -> time_mutex\n", philos[i]->i);
+            destroy_mutex(philos[i]->time_mutex);
+            free(philos[i]->time_mutex);
+            philos[i]->time_mutex = NULL;
+        }
+        if (philos[i]->is_dead_mutex)
+        {
+            printf("destroy_mutex phil %d -> is_dead_mutex\n", philos[i]->i);
+            destroy_mutex(philos[i]->is_dead_mutex);
+            free(philos[i]->is_dead_mutex);
+            philos[i]->is_dead_mutex = NULL;
+        }
         printf("free philos %d\n", i);
         free(philos[i]);
         philos[i] = NULL;

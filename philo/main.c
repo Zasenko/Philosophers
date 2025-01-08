@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/07 13:02:59 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/08 11:06:14 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,9 @@ int	wait_results(t_philo *philo)
 	}
 	else
 	{
-		pthread_mutex_lock(philo->print);
-		printf("Result %d FINISH\n", philo->i);
-		pthread_mutex_unlock(philo->print);
+		return (1);
 	}
-	return (1);
+	return (-1);
 }
 
 int	main(int argc, char **argv)
@@ -48,9 +46,11 @@ int	main(int argc, char **argv)
 	while (prog.philos[i])
 	{
 		pthread_t thread;
-		// pthread_mutex_lock(prog.print);
-    	// printf("creating philosopher: %d\n", prog.philos[i]->i);
-		// pthread_mutex_unlock(prog.print);
+
+		long time_of_creations = get_time();
+		if (time_of_creations == -1)
+			return (1); //  todo free
+		prog.philos[i]->time = time_of_creations;
 		if (pthread_create(&thread, NULL, create_philosopher, (void *)prog.philos[i]) != 0)
 		{
 			free_prog(&prog);
@@ -69,10 +69,10 @@ int	main(int argc, char **argv)
 		pthread_mutex_unlock(prog.print);
 		//return (free_prog(&prog), EXIT_FAILURE);	
 	}
-	if (check_result == 0)
+	else if (check_result == 0)
 	{
 		pthread_mutex_lock(prog.print);
-		printf("---------Someone dead\n");//todo delete
+		printf("Someone dead\n");//todo delete
 		pthread_mutex_unlock(prog.print);
 	}
 	else
@@ -110,10 +110,11 @@ int	main(int argc, char **argv)
 	free_prog(&prog);
 	return (EXIT_SUCCESS);
 }
+
 //valgrind --tool=helgrind ./philo 5 800 200 200 3
 
-// Test 1 800 200 200. The philosopher should not eat and should die.
-// Test 5 800 200 200. No philosopher should die.
-// Test 5 800 200 200 7. No philosopher should die and the simulation should stop when every philosopher has eaten at least 7 times.
-// Test 4 410 200 200. No philosopher should die.
-// Test 4 310 200 100. One philosopher should die.
+//  1 800 200 200. The philosopher should not eat and should die.
+//  5 800 200 200. No philosopher should die.
+//  5 800 200 200 7. No philosopher should die and the simulation should stop when every philosopher has eaten at least 7 times.
+//  4 410 200 200. No philosopher should die.
+//  4 310 200 100. One philosopher should die.
