@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 13:01:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/08 10:55:39 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/08 13:52:02 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,10 @@ void	*create_philosopher(void *arg)
 	if (!philo->fork1)
 		return (NULL);
 	
-
+	if (philo->i %2 == 0)
+	{
+		usleep(2 * 1000);
+	}
 	if (!philo->fork2)
 	{
 		printf("NO FORK 2 - DEATH !!!!!\n");

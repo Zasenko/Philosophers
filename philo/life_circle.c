@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 10:31:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/08 10:57:18 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/08 14:27:02 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,52 +23,48 @@ int check_if_dead(t_philo *philo)
 	return (0);
 }
 
-int take_forks_test(t_philo *philo, pthread_mutex_t *fork1, pthread_mutex_t *fork2)
+int take_fork(t_philo *philo, pthread_mutex_t *fork)
 {
 	long time;
 	int death_res;
 
+	if (!philo || !fork)
+		return (-1);
+	if (pthread_mutex_lock(fork) != 0)
+		return (-1);
+	death_res = check_if_dead(philo);
+	if (death_res == -1)
+		return (pthread_mutex_unlock(fork), -1);
+	else if (death_res)
+		return (pthread_mutex_unlock(fork), 0);
+	time = get_time();
+	if (time == -1)
+		return (pthread_mutex_unlock(fork), -1);
+		
+	if (pthread_mutex_lock(philo->print) != 0)
+		return (pthread_mutex_unlock(fork), -1);
+	printf("%ld %d has taken a fork\n", time, philo->i);
+	if (pthread_mutex_unlock(philo->print) != 0)
+		return (pthread_mutex_unlock(fork), -1);
+	return (1);
+}
+
+int take_forks_test(t_philo *philo, pthread_mutex_t *fork1, pthread_mutex_t *fork2)
+{
+	int res;
+
 	if (!philo || !fork1 || !fork2)
 		return (perror("take_forks_test error"), -1);
-
-	// death_res = check_if_dead(philo);
-	// if (death_res == -1)
-	// 	return (-1);
-	// else if (death_res)
-	// 	return (0);
-
-	if (pthread_mutex_lock(fork1) != 0)
-		return (perror("pthread_mutex_lock error"), -1);
-		
-	death_res = check_if_dead(philo);
-	if (death_res == -1)
-		return (pthread_mutex_unlock(fork1), -1);
-	else if (death_res)
-		return (pthread_mutex_unlock(fork1), 0);
-
-	time = get_time();
-	if (time == -1)
+	res = take_fork(philo, fork1);
+	if (res == -1)
 		return (-1);
-	pthread_mutex_lock(philo->print);
-	printf("%ld %d has taken a fork\n", time, philo->i);
-	pthread_mutex_unlock(philo->print);
-
-	if (pthread_mutex_lock(fork2) != 0)
-		return (perror("pthread_mutex_lock error"), -1); // todo unlock fork1
-
-	death_res = check_if_dead(philo);
-	if (death_res == -1)
-		return (pthread_mutex_unlock(fork1), pthread_mutex_unlock(fork2), - 1);
-	else if (death_res)
-		return (pthread_mutex_unlock(fork1), pthread_mutex_unlock(fork2), 0);
-
-	time = get_time();
-	if (time == -1)
-		return (pthread_mutex_unlock(fork1), pthread_mutex_unlock(fork2), -1);
-
-	pthread_mutex_lock(philo->print);
-	printf("%ld %d has taken a fork\n", time, philo->i);
-	pthread_mutex_unlock(philo->print);
+	else if (res == 0)
+		return (0);
+	res = take_fork(philo, fork2);
+	if (res == -1)
+		return (pthread_mutex_unlock(fork1), -1);
+	else if (res == 0)
+		return (pthread_mutex_unlock(fork1), 0);
 	return 1;
 }
 
@@ -78,7 +74,7 @@ int take_forks(t_philo *philo)
 
 	if (!philo)
 		return (-1);
-	if (philo->i % 2 != 0)
+	if (philo->i % 2 != 0 || (philo->number_of_philosophers % 2 != 0 && philo->i == philo->number_of_philosophers))
 	{
 		fork_res = take_forks_test(philo, philo->fork1, philo->fork2);
 		if (fork_res == -1)
@@ -104,10 +100,10 @@ int	eating(t_philo *philo)
 
 	if (!philo)
 		return (-1);
+	if (pthread_mutex_lock(philo->time_mutex) != 0)
+		return (-1);
 	time = get_time();
 	if (time == -1)
-		return (-1);
-	if (pthread_mutex_lock(philo->time_mutex) != 0)
 		return (-1);
 	philo->time = time;
 	if (pthread_mutex_unlock(philo->time_mutex) != 0)
@@ -174,6 +170,7 @@ int	sleeping(t_philo *philo)
 			return (-1);
 		else if (death_res)
 			return (0);
+		//usleep(5 * 1000);
 	}
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/08 11:06:14 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/08 14:32:20 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,7 @@ int	wait_results(t_philo *philo)
 		printf("Result %d NULL\n", philo->i);
 		return (-1);
 	}
-	else
-	{
-		return (1);
-	}
-	return (-1);
+	return (1);
 }
 
 int	main(int argc, char **argv)
