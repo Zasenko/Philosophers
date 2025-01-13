@@ -22,15 +22,16 @@ void	*create_philosopher(void *arg)
 		return (NULL);
 	if (!philo->fork1)
 		return (NULL);
-	
-	if (philo->i %2 == 0)
+
+	if (philo->i % 2 == 0)
 	{
-		usleep(2 * 1000);
+		usleep(philo->time_to_eat / 2);
 	}
+	
 	if (!philo->fork2)
 	{
 		printf("NO FORK 2 - DEATH !!!!!\n");
-		return (arg); // ? todo free *philo
+		return (arg);
 	}
 	else
 	{
@@ -64,11 +65,11 @@ void	*create_philosopher(void *arg)
 			{
 				int result = philo_circle(philo);
 				if (result == -1)
-					return (NULL);// ? todo free *philo
+					return (NULL);
 				else if (result == 0)
-					return (arg); // ? todo free *philo
+					return (arg);
 			}
 		}
 	}
-	return (NULL);// ? todo free *philo
+	return (NULL);
 }

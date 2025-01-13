@@ -85,10 +85,10 @@ int	main(int argc, char **argv)
 		int result = wait_results(prog.philos[i]);
 		if (result == -1)
 		{
-			free_prog(&prog);
 			pthread_mutex_lock(prog.print);
 			printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
 			pthread_mutex_unlock(prog.print);
+			free_prog(&prog);
 			//return (EXIT_FAILURE);
 		}
 		else if (result == 0)

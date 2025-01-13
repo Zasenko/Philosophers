@@ -33,6 +33,7 @@ int check(t_prog *prog)
 		{
 			return 0;
 		}
+		usleep(100);
 	}
 	return -1;
 }
@@ -46,40 +47,6 @@ static int is_phil_dead(t_philo **philos)
 	i = 0;
 	while (philos[i])
 	{
-		// ///-------- V1
-		// pthread_mutex_lock(philos[i]->is_dead_mutex);
-		// if (philos[i]->is_dead == 1)
-		// {
-		// 	pthread_mutex_unlock(philos[i]->is_dead_mutex);
-
-		// 	int z = 0;
-		// 	while (philos[z])
-		// 	{
-		// 		if (z != i)
-		// 		{
-		// 			pthread_mutex_lock(philos[z]->is_dead_mutex);
-		// 			philos[z]->is_dead = 1;
-		// 			pthread_mutex_unlock(philos[z]->is_dead_mutex);
-		// 		}
-		// 		z++;
-		// 	}
-		// 				long now = get_time();
-		// 	if (now == -1)
-		// 	return (-1);
-		// 	pthread_mutex_lock(philos[i]->print);
-		// 	printf("-CHECK- %ld %d died\n", now, philos[i]->i);
-		// 	printf("WHY DEAD: time now - last eat time: %ld\n", now - philos[i]->time);
-		// 	long new_now = get_time();
-		// 	if (new_now == -1)
-		// 		return (pthread_mutex_unlock(philos[i]->print), -1); // unlock
-		// 	printf("print different (new_now - (last eat time + time_to_die) ): %ld\n", new_now - (philos[i]->time + (long)philos[i]->time_to_die));
-		// 	pthread_mutex_unlock(philos[i]->print);
-		// 	return (1);
-		// }
-		// pthread_mutex_unlock(philos[i]->is_dead_mutex);
-
-		//-------- V2
-		
 		pthread_mutex_lock(philos[i]->time_mutex);
 		long now = get_time();
 		if (now == -1)
@@ -116,7 +83,6 @@ static int is_phil_dead(t_philo **philos)
 		pthread_mutex_unlock(philos[i]->time_mutex);
 		i++;
 	}
-//	usleep(2 * 1000);
 	return (0);
 }
 

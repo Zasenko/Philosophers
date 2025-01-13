@@ -19,4 +19,10 @@ long get_time()
 	if (gettimeofday(&tv, NULL) == -1)
 		return (-1);
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+	// (seconds * 1000) + (microsec / 1000)
 }
+
+// 1 sec == 1 000 000 microsec
+// 1 sec == 1 000 milisec
+
+// tv.tv_sec / 60 / 60 / 24 / 365

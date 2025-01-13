@@ -74,7 +74,11 @@ int take_forks(t_philo *philo)
 
 	if (!philo)
 		return (-1);
-	if (philo->i % 2 != 0 || (philo->number_of_philosophers % 2 != 0 && philo->i == philo->number_of_philosophers))
+	long time = get_time();
+	if (time == -1)
+		return (-1);
+
+	if (philo->i % 2 != 0)
 	{
 		fork_res = take_forks_test(philo, philo->fork1, philo->fork2);
 		if (fork_res == -1)
@@ -96,39 +100,38 @@ int take_forks(t_philo *philo)
 int	eating(t_philo *philo)
 {
 	long	time;
-	int death_res;
+	//int death_res;
 
 	if (!philo)
-		return (-1);
-	if (pthread_mutex_lock(philo->time_mutex) != 0)
 		return (-1);
 	time = get_time();
 	if (time == -1)
 		return (-1);
+	if (pthread_mutex_lock(philo->time_mutex) != 0)
+		return (-1);
 	philo->time = time;
 	if (pthread_mutex_unlock(philo->time_mutex) != 0)
 		return (-1);
-	death_res = check_if_dead(philo);
-	if (death_res == -1)
-		return (-1);
-	else if (death_res)
-		return (0);
+	// death_res = check_if_dead(philo);
+	// if (death_res == -1)
+	// 	return (-1);
+	// else if (death_res)
+	// 	return (0);
 	time = get_time();
 	if (time == -1)
 		return (-1);
 	pthread_mutex_lock(philo->print);
 	printf("%ld %d is eating\n", time, philo->i);
 	pthread_mutex_unlock(philo->print);
-	while(usleep(philo->time_to_eat * 1000))
+
+	long now;
+	now = get_time();
+	while (now - time < philo->time_to_eat)
 	{
-		death_res = check_if_dead(philo);
-		if (death_res == -1)
-			return (pthread_mutex_unlock(philo->fork1), pthread_mutex_unlock(philo->fork2), -1);
-		else if (death_res)
-			return (pthread_mutex_unlock(philo->fork1), pthread_mutex_unlock(philo->fork2), 0);
-		//usleep(5 * 1000);
+		usleep(100);
+		now = get_time();
 	}
-	if (philo->i % 2 == 0)
+	if (philo->i % 2 != 0)
 	{
 		if (pthread_mutex_unlock(philo->fork1) != 0)
 			return (perror("pthread_mutex_unlock error"), -1);
@@ -145,7 +148,7 @@ int	eating(t_philo *philo)
 	return (1);
 }
 
-int	sleeping(t_philo *philo)
+int sleeping(t_philo *philo)
 {
 	long time;
 	int death_res;
@@ -163,14 +166,13 @@ int	sleeping(t_philo *philo)
 	pthread_mutex_lock(philo->print);
 	printf("%ld %d is sleeping\n", time, philo->i);
 	pthread_mutex_unlock(philo->print);
-	while (usleep(philo->time_to_sleep * 1000))
+
+	long now;
+	now = get_time();
+	while (now - time < philo->time_to_sleep)
 	{
-		death_res = check_if_dead(philo);
-		if (death_res == -1)
-			return (-1);
-		else if (death_res)
-			return (0);
-		//usleep(5 * 1000);
+		usleep(100);
+		now = get_time();
 	}
 	return (1);
 }
