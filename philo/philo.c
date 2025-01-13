@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 13:01:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/08 13:52:02 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/13 13:36:04 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,8 @@ void	*create_philosopher(void *arg)
 		return (NULL);
 
 	if (philo->i % 2 == 0)
-	{
 		usleep(philo->time_to_eat / 2);
-	}
-	
+
 	if (!philo->fork2)
 	{
 		printf("NO FORK 2 - DEATH !!!!!\n");
@@ -50,13 +48,13 @@ void	*create_philosopher(void *arg)
 					return (NULL);
 				else if (result == 0)
 					return (arg);
-				if (pthread_mutex_lock(philo->must_eat_times_mutex) != 0)
-					return (NULL);
-				philo->must_eat_times--;
-				if (pthread_mutex_unlock(philo->must_eat_times_mutex) != 0)
-					return (NULL);
 				must_eat_times--;
 			}
+			if (pthread_mutex_lock(philo->must_eat_times_mutex) != 0)
+				return (NULL);
+			philo->must_eat_times = 0;
+			if (pthread_mutex_unlock(philo->must_eat_times_mutex) != 0)
+				return (NULL);
 			return (arg);
 		}
 		else
