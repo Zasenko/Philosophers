@@ -34,11 +34,10 @@ void	*create_philosopher(void *arg)
 	else
 	{
 		
-		if (pthread_mutex_lock(philo->must_eat_times_mutex) != 0)
-			return (NULL);
+		pthread_mutex_lock(philo->must_eat_times_mutex);
 		int must_eat_times = philo->must_eat_times;
-		if (pthread_mutex_unlock(philo->must_eat_times_mutex) != 0)
-			return (NULL);
+		pthread_mutex_unlock(philo->must_eat_times_mutex);
+		
 		if (must_eat_times > 0)
 		{
 			while (must_eat_times > 0)
@@ -48,13 +47,13 @@ void	*create_philosopher(void *arg)
 					return (NULL);
 				else if (result == 0)
 					return (arg);
+				if (pthread_mutex_lock(philo->must_eat_times_mutex) != 0)
+					return (NULL);
+				philo->must_eat_times--;
+				if (pthread_mutex_unlock(philo->must_eat_times_mutex) != 0)
+					return (NULL);
 				must_eat_times--;
 			}
-			if (pthread_mutex_lock(philo->must_eat_times_mutex) != 0)
-				return (NULL);
-			philo->must_eat_times = 0;
-			if (pthread_mutex_unlock(philo->must_eat_times_mutex) != 0)
-				return (NULL);
 			return (arg);
 		}
 		else

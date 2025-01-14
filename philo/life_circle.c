@@ -12,6 +12,43 @@
 
 #include "philo.h"
 
+int check_if_dead(t_philo *philo);
+int take_fork(t_philo *philo, pthread_mutex_t *fork);
+int take_forks_test(t_philo *philo, pthread_mutex_t *fork1, pthread_mutex_t *fork2);
+int take_forks(t_philo *philo);
+int eating(t_philo *philo);
+int sleeping(t_philo *philo);
+int thinking(t_philo *philo);
+
+int philo_circle(t_philo *philo)
+{
+	int take_result;
+	int eating_result;
+	int sleeping_result;
+
+	if (!philo)
+		return (-1);
+
+	take_result = take_forks(philo);
+	if (take_result == -1)
+		return (-1);
+	else if (take_result == 0)
+		return (0);
+	eating_result = eating(philo);
+	if (eating_result == -1)
+		return (-1);
+	else if (eating_result == 0)
+		return (0);
+	sleeping_result = sleeping(philo);
+	if (sleeping_result == -1)
+		return (-1);
+	else if (sleeping_result == 0)
+		return (0);
+	if (thinking(philo) == -1)
+		return (-1);
+	return (1);
+}
+
 int check_if_dead(t_philo *philo)
 {
 	if (!philo)
@@ -40,7 +77,7 @@ int take_fork(t_philo *philo, pthread_mutex_t *fork)
 	time = get_time();
 	if (time == -1)
 		return (pthread_mutex_unlock(fork), -1);
-		
+
 	if (pthread_mutex_lock(philo->print) != 0)
 		return (pthread_mutex_unlock(fork), -1);
 	printf("%ld %d has taken a fork\n", time, philo->i);
@@ -100,7 +137,7 @@ int take_forks(t_philo *philo)
 int	eating(t_philo *philo)
 {
 	long	time;
-	//int death_res;
+//	int death_res;
 
 	if (!philo)
 		return (-1);
@@ -112,11 +149,7 @@ int	eating(t_philo *philo)
 	philo->time = time;
 	if (pthread_mutex_unlock(philo->time_mutex) != 0)
 		return (-1);
-	// death_res = check_if_dead(philo);
-	// if (death_res == -1)
-	// 	return (-1);
-	// else if (death_res)
-	// 	return (0);
+
 	time = get_time();
 	if (time == -1)
 		return (-1);
@@ -129,6 +162,11 @@ int	eating(t_philo *philo)
 	while (now - time < philo->time_to_eat)
 	{
 		usleep(100);
+		// death_res = check_if_dead(philo);
+		// if (death_res == -1)
+		// 	return (-1);
+		// else if (death_res)
+		// 	return (0);
 		now = get_time();
 	}
 	if (philo->i % 2 != 0)
@@ -172,6 +210,12 @@ int sleeping(t_philo *philo)
 	while (now - time < philo->time_to_sleep)
 	{
 		usleep(100);
+		// death_res = check_if_dead(philo);
+		// if (death_res == -1)
+		// 	return (-1);
+		// else if (death_res)
+		// 	return (0);
+		
 		now = get_time();
 	}
 	return (1);
@@ -194,34 +238,5 @@ int	thinking(t_philo *philo)
 	pthread_mutex_lock(philo->print);
 	printf("%ld %d is thinking\n",time , philo->i);
 	pthread_mutex_unlock(philo->print);
-	return (1);
-}
-
-int	philo_circle(t_philo *philo)
-{
-	int	take_result;
-	int	eating_result;
-	int	sleeping_result;
-	
-	if (!philo)
-		return (-1);
-	
-	take_result = take_forks(philo);
-	if (take_result == -1)
-		return (-1);
-	else if (take_result == 0)
-		return (0);
-	eating_result = eating(philo);
-	if (eating_result == -1)
-		return (-1);
-	else if (eating_result == 0)
-		return (0);
-	sleeping_result = sleeping(philo);
-	if (sleeping_result == -1)
-		return (-1);
-	else if (sleeping_result == 0)
-		return (0);
-	if (thinking(philo) == -1)
-		return (-1);
 	return (1);
 }
