@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 10:31:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/08 14:27:02 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/15 13:19:34 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int take_fork(t_philo *philo, pthread_mutex_t *fork)
 
 	if (pthread_mutex_lock(philo->print) != 0)
 		return (pthread_mutex_unlock(fork), -1);
-	printf("%ld %d has taken a fork\n", time, philo->i);
+	printf("%ld %d has taken a fork\n", time - philo->start_time, philo->i);
 	if (pthread_mutex_unlock(philo->print) != 0)
 		return (pthread_mutex_unlock(fork), -1);
 	return (1);
@@ -154,7 +154,7 @@ int	eating(t_philo *philo)
 	if (time == -1)
 		return (-1);
 	pthread_mutex_lock(philo->print);
-	printf("%ld %d is eating\n", time, philo->i);
+	printf("%ld %d is eating\n", time - philo->start_time, philo->i);
 	pthread_mutex_unlock(philo->print);
 
 	long now;
@@ -169,20 +169,24 @@ int	eating(t_philo *philo)
 		// 	return (0);
 		now = get_time();
 	}
-	if (philo->i % 2 != 0)
-	{
-		if (pthread_mutex_unlock(philo->fork1) != 0)
+	if (pthread_mutex_unlock(philo->fork1) != 0)
 			return (perror("pthread_mutex_unlock error"), -1);
 		if (pthread_mutex_unlock(philo->fork2) != 0)
 			return (perror("pthread_mutex_unlock error"), -1);
-	}
-	else
-	{
-		if (pthread_mutex_unlock(philo->fork2) != 0)
-			return (perror("pthread_mutex_unlock error"), -1);
-		if (pthread_mutex_unlock(philo->fork1) != 0)
-			return (perror("pthread_mutex_unlock error"), -1);
-	}
+	// if (philo->i % 2 != 0)
+	// {
+	// 	if (pthread_mutex_unlock(philo->fork2) != 0)
+	// 		return (perror("pthread_mutex_unlock error"), -1);
+	// 	if (pthread_mutex_unlock(philo->fork1) != 0)
+	// 		return (perror("pthread_mutex_unlock error"), -1);
+	// }
+	// else
+	// {
+	// 	if (pthread_mutex_unlock(philo->fork1) != 0)
+	// 		return (perror("pthread_mutex_unlock error"), -1);
+	// 	if (pthread_mutex_unlock(philo->fork2) != 0)
+	// 		return (perror("pthread_mutex_unlock error"), -1);
+	// }
 	return (1);
 }
 
@@ -202,7 +206,7 @@ int sleeping(t_philo *philo)
 	if (time == -1)
 		return (-1);
 	pthread_mutex_lock(philo->print);
-	printf("%ld %d is sleeping\n", time, philo->i);
+	printf("%ld %d is sleeping\n", time - philo->start_time, philo->i);
 	pthread_mutex_unlock(philo->print);
 
 	long now;
@@ -236,7 +240,7 @@ int	thinking(t_philo *philo)
 	if (time == -1)
 		return (-1);
 	pthread_mutex_lock(philo->print);
-	printf("%ld %d is thinking\n",time , philo->i);
+	printf("%ld %d is thinking\n", time - philo->start_time, philo->i);
 	pthread_mutex_unlock(philo->print);
 	return (1);
 }

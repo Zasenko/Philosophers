@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 12:19:47 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/08 10:59:31 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/15 10:52:22 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,8 @@ int	parse(t_prog *prog, int argc, char **argv)
 			return (-1);
 		}
 		philos[i]->print = prog->print;
+		philos[i]->all_philos_created = 0;
+		philos[i]->all_philos_created_mutex = prog->all_philos_created_mutex;
 		i++;
 	}
 	prog->philos = philos;

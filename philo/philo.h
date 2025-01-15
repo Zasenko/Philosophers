@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/08 10:58:16 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/15 11:06:18 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,10 @@ typedef struct s_philo
 	pthread_mutex_t *time_mutex;
 	int	is_dead;
 	pthread_mutex_t *is_dead_mutex;
+
+	int	all_philos_created;
+	pthread_mutex_t *all_philos_created_mutex;
+	long start_time;
 } t_philo;
 
 typedef struct s_prog
@@ -50,6 +54,8 @@ typedef struct s_prog
 	t_philo	**philos;
 	pthread_mutex_t **forks;
 	pthread_mutex_t	*print;
+	pthread_mutex_t *all_philos_created_mutex;
+	long start_time;
 } t_prog;
 
 int		init_prog(t_prog *prog);

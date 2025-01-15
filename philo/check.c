@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 15:07:14 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/13 13:59:07 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/15 11:56:01 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int check(t_prog *prog)
 		{
 			return 0;
 		}
-		usleep(100);
+		//usleep(100);
 	}
 	return -1;
 }
@@ -78,7 +78,10 @@ static int is_phil_dead(t_philo **philos, t_prog *prog)
 				}
 				pthread_mutex_lock(philos[i]->print);
 				long now2 = get_time();
-				printf("%ld %ld %ld %d died\n", now, now2, now2 - now, philos[i]->i);
+				//printf("%ld %ld %ld %d died\n", now, now2, now2 - now, philos[i]->i);
+
+				printf("%ld %d died\n", now2 - prog->start_time, philos[i]->i);
+
 				pthread_mutex_unlock(philos[i]->print);
 				return (1);
 			}
@@ -116,10 +119,10 @@ static int is_phil_dead(t_philo **philos, t_prog *prog)
 						}
 						z++;
 					}
-
 					pthread_mutex_lock(philos[i]->print);
 					long now2 = get_time();
-					printf("%ld %ld %ld %d died\n", now, now2, now2 - now, philos[i]->i);
+					//printf("%ld %ld %ld %d died\n", now, now2, now2 - now, philos[i]->i);
+					printf("%ld %d died\n", now2 - prog->start_time, philos[i]->i);
 					pthread_mutex_unlock(philos[i]->print);
 					return (1);
 				}

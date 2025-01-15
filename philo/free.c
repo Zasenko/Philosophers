@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 13:29:27 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/08 12:34:37 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/15 10:45:37 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,15 @@ void free_prog(t_prog *prog)
     prog->philos = NULL;
     if (prog->print)
     {
-       // printf("destroy_mutex prog->print\n");
         destroy_mutex(prog->print);
         free(prog->print);
         prog->print = NULL;
+    }
+    if (prog->all_philos_created_mutex)
+    {
+        destroy_mutex(prog->all_philos_created_mutex);
+        free(prog->all_philos_created_mutex);
+        prog->all_philos_created_mutex = NULL;
     }
 }
 
@@ -39,7 +44,6 @@ void free_forks(pthread_mutex_t **forks)
     i = 0;
     while (forks[i])
     {
-       // printf("destroy_mutex fork %d\n", i);
         destroy_mutex(forks[i]);
         free(forks[i]);
         forks[i] = NULL;
@@ -59,26 +63,22 @@ void free_philos(t_philo **philos)
     {
         if (philos[i]->must_eat_times_mutex)
         {
-            //printf("destroy_mutex phil %d -> must_eat_times_mutex\n", philos[i]->i);
             destroy_mutex(philos[i]->must_eat_times_mutex);
             free(philos[i]->must_eat_times_mutex);
             philos[i]->must_eat_times_mutex = NULL;
         }
         if (philos[i]->time_mutex)
         {
-           // printf("destroy_mutex phil %d -> time_mutex\n", philos[i]->i);
             destroy_mutex(philos[i]->time_mutex);
             free(philos[i]->time_mutex);
             philos[i]->time_mutex = NULL;
         }
         if (philos[i]->is_dead_mutex)
         {
-           // printf("destroy_mutex phil %d -> is_dead_mutex\n", philos[i]->i);
             destroy_mutex(philos[i]->is_dead_mutex);
             free(philos[i]->is_dead_mutex);
             philos[i]->is_dead_mutex = NULL;
         }
-       // printf("free philos %d\n", i);
         free(philos[i]);
         philos[i] = NULL;
         i++;

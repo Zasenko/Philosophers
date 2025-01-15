@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 13:01:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/13 13:36:04 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/15 12:20:30 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,24 @@ void	*create_philosopher(void *arg)
 	//long	time_of_creations;
 	
 	philo = (t_philo *)arg;
-	if (!philo)
-		return (NULL);
-	if (!philo->fork1)
+	if (!philo || !philo->fork1)
 		return (NULL);
 
-	if (philo->i % 2 == 0)
-		usleep(philo->time_to_eat / 2);
+	int all_philos_created;
+	pthread_mutex_lock(philo->all_philos_created_mutex);
+	all_philos_created = philo->all_philos_created;
+	pthread_mutex_unlock(philo->all_philos_created_mutex);
+	
+	while(!all_philos_created)
+	{
+		usleep(100);
+		pthread_mutex_lock(philo->all_philos_created_mutex);
+		all_philos_created = philo->all_philos_created;
+		pthread_mutex_unlock(philo->all_philos_created_mutex);
+	}
+
+	if (philo->i % 2 == 0 || (philo->number_of_philosophers % 2 != 0 && philo->i == philo->number_of_philosophers))
+		usleep(philo->time_to_die / 2 * 1000);
 
 	if (!philo->fork2)
 	{

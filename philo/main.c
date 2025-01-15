@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/08 14:32:20 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/15 13:52:23 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,14 @@ int	main(int argc, char **argv)
 		return (free_prog(&prog), EXIT_FAILURE);
 	if (parse(&prog, argc, argv) == -1)
 		return (free_prog(&prog), EXIT_FAILURE);
-	
+
+	prog.start_time = get_time();
 	int i = 0;
 	while (prog.philos[i])
 	{
 		pthread_t thread;
-
-		long time_of_creations = get_time();
-		if (time_of_creations == -1)
-			return (1); //  todo free
-		prog.philos[i]->time = time_of_creations;
+		prog.philos[i]->time = prog.start_time;
+		prog.philos[i]->start_time = prog.start_time;
 		if (pthread_create(&thread, NULL, create_philosopher, (void *)prog.philos[i]) != 0)
 		{
 			free_prog(&prog);
@@ -54,6 +52,14 @@ int	main(int argc, char **argv)
 			return (EXIT_FAILURE);
     	}
 		prog.philos[i]->thread = thread;
+		i++;
+	}
+	i = 0;
+	while (prog.philos[i])
+	{
+		pthread_mutex_lock(prog.all_philos_created_mutex);
+		prog.philos[i]->all_philos_created = 1;
+		pthread_mutex_unlock(prog.all_philos_created_mutex);
 		i++;
 	}
 
@@ -65,20 +71,6 @@ int	main(int argc, char **argv)
 		pthread_mutex_unlock(prog.print);
 		//return (free_prog(&prog), EXIT_FAILURE);	
 	}
-	else if (check_result == 0)
-	{
-		pthread_mutex_lock(prog.print);
-		printf("Someone dead\n");//todo delete
-		pthread_mutex_unlock(prog.print);
-	}
-	else
-	{
-		pthread_mutex_lock(prog.print);
-		printf("All eat\n");
-		pthread_mutex_unlock(prog.print);
-	}
-	
-	// remove!
 	i = 0;
 	while (prog.philos[i])
 	{
@@ -91,26 +83,56 @@ int	main(int argc, char **argv)
 			free_prog(&prog);
 			//return (EXIT_FAILURE);
 		}
-		else if (result == 0)
-		{
-			pthread_mutex_lock(prog.print);
-			printf("Philosopher: %d dead!!!!!\n", prog.philos[i]->i);
-			pthread_mutex_unlock(prog.print);
-		}
 		i++;
 	}
-	//
-	pthread_mutex_lock(prog.print);
-	printf("END\n");
-	pthread_mutex_unlock(prog.print);
 	free_prog(&prog);
 	return (EXIT_SUCCESS);
 }
 
 //valgrind --tool=helgrind ./philo 5 800 200 200 3
 
-//  1 800 200 200. The philosopher should not eat and should die.
-//  5 800 200 200. No philosopher should die.
-//  5 800 200 200 7. No philosopher should die and the simulation should stop when every philosopher has eaten at least 7 times.
-//  4 410 200 200. No philosopher should die.
-//  4 310 200 100. One philosopher should die.
+// ---die---
+
+// 1 800 200 100 10 +
+// 1 800 200 200 10 +
+// 3 599 200 200 10 +
+// 31 599 200 200 10 +
+// 131 596 200 200 10 +
+
+// 4 310 200 100 10 +
+
+// ---not die---
+
+// 5 601 200 200 10 ++
+// 5 610 200 100 10 -
+// 5 610 200 200 10 ++
+// 5 800 200 200 7 +
+// 5 800 200 200 10 +-
+// 31 601 200 200 10
+// 31 605 200 200 10 -
+// 31 610 200 100 10 -
+// 31 610 200 200 10 +
+// 131 601 200 200 10
+// 131 605 200 200 10
+// 131 610 200 100 10 -
+// 131 610 200 200 10
+// 199 601 200 200 10 +
+// 199 605 200 200 10 +
+// 199 610 200 100 10 -
+// 199 610 200 200 10 ++
+
+
+// 4 410 200 100 10 ++
+// 4 410 200 200 10 ++
+// 50 401 200 200 10 -
+// 50 405 200 200 10 +
+// 50 410 200 200 10 +
+// 50 410 200 100 10 +
+// 130 401 200 200 10 -
+// 130 405 200 100 10 -
+// 130 410 200 100 10 --
+// 130 410 200 200 10 -
+// 198 410 200 100 10 ++
+// 198 405 200 200 10 ++
+// 198 610 200 200 10 ++
+// 198 800 200 200 10 --
