@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 13:29:27 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/15 10:45:37 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/16 10:01:51 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,22 @@ void free_prog(t_prog *prog)
         destroy_mutex(prog->all_philos_created_mutex);
         free(prog->all_philos_created_mutex);
         prog->all_philos_created_mutex = NULL;
+    }
+    if (prog->all_philos_created)
+    {
+        free(prog->all_philos_created);
+        prog->all_philos_created = NULL;
+    }
+    if (prog->is_dead_mutex)
+    {
+        destroy_mutex(prog->is_dead_mutex);
+        free(prog->is_dead_mutex);
+        prog->is_dead_mutex = NULL;
+    }
+    if (prog->is_dead)
+    {
+        free(prog->is_dead);
+        prog->is_dead = NULL;
     }
 }
 
@@ -72,12 +88,6 @@ void free_philos(t_philo **philos)
             destroy_mutex(philos[i]->time_mutex);
             free(philos[i]->time_mutex);
             philos[i]->time_mutex = NULL;
-        }
-        if (philos[i]->is_dead_mutex)
-        {
-            destroy_mutex(philos[i]->is_dead_mutex);
-            free(philos[i]->is_dead_mutex);
-            philos[i]->is_dead_mutex = NULL;
         }
         free(philos[i]);
         philos[i] = NULL;

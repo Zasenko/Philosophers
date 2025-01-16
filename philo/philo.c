@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 13:01:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/15 12:20:30 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/16 13:37:12 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 void	*create_philosopher(void *arg)
 {
 	t_philo	*philo;
-	//long	time_of_creations;
 	
 	philo = (t_philo *)arg;
 	if (!philo || !philo->fork1)
@@ -23,60 +22,39 @@ void	*create_philosopher(void *arg)
 
 	int all_philos_created;
 	pthread_mutex_lock(philo->all_philos_created_mutex);
-	all_philos_created = philo->all_philos_created;
+	all_philos_created = *philo->all_philos_created;
 	pthread_mutex_unlock(philo->all_philos_created_mutex);
 	
 	while(!all_philos_created)
 	{
 		usleep(100);
 		pthread_mutex_lock(philo->all_philos_created_mutex);
-		all_philos_created = philo->all_philos_created;
+		all_philos_created = *philo->all_philos_created;
 		pthread_mutex_unlock(philo->all_philos_created_mutex);
 	}
-
-	if (philo->i % 2 == 0 || (philo->number_of_philosophers % 2 != 0 && philo->i == philo->number_of_philosophers))
-		usleep(philo->time_to_die / 2 * 1000);
-
-	if (!philo->fork2)
+	
+	if (philo->number_of_philosophers == 1)
 	{
-		printf("NO FORK 2 - DEATH !!!!!\n");
+		pthread_mutex_lock(philo->print);
+		long time = get_time();
+		printf("%ld %d has taken a fork\n", time - philo->start_time, philo->i);
+		pthread_mutex_unlock(philo->print);
+		usleep(philo->time_to_die);
 		return (arg);
 	}
 	else
 	{
+		//if (philo->i % 2 == 0 || (philo->number_of_philosophers % 2 != 0 && philo->i == philo->number_of_philosophers))
+		if (philo->i % 2 == 0)
+			usleep(philo->time_to_eat / 2 * 1000);
 		
-		pthread_mutex_lock(philo->must_eat_times_mutex);
-		int must_eat_times = philo->must_eat_times;
-		pthread_mutex_unlock(philo->must_eat_times_mutex);
-		
-		if (must_eat_times > 0)
+		while (1)
 		{
-			while (must_eat_times > 0)
-			{
-				int result = philo_circle(philo);
-				if (result == -1)
-					return (NULL);
-				else if (result == 0)
-					return (arg);
-				if (pthread_mutex_lock(philo->must_eat_times_mutex) != 0)
-					return (NULL);
-				philo->must_eat_times--;
-				if (pthread_mutex_unlock(philo->must_eat_times_mutex) != 0)
-					return (NULL);
-				must_eat_times--;
-			}
-			return (arg);
-		}
-		else
-		{
-			while (1)
-			{
-				int result = philo_circle(philo);
-				if (result == -1)
-					return (NULL);
-				else if (result == 0)
-					return (arg);
-			}
+			int result = philo_circle(philo);
+			if (result == -1)
+				return (NULL);
+			else if (result == 0)
+				return (arg);
 		}
 	}
 	return (NULL);

@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/15 13:52:23 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/16 13:20:26 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,32 +37,27 @@ int	main(int argc, char **argv)
 		return (free_prog(&prog), EXIT_FAILURE);
 	if (parse(&prog, argc, argv) == -1)
 		return (free_prog(&prog), EXIT_FAILURE);
-
 	prog.start_time = get_time();
 	int i = 0;
 	while (prog.philos[i])
 	{
 		pthread_t thread;
+		
 		prog.philos[i]->time = prog.start_time;
 		prog.philos[i]->start_time = prog.start_time;
+
 		if (pthread_create(&thread, NULL, create_philosopher, (void *)prog.philos[i]) != 0)
 		{
 			free_prog(&prog);
 			perror("pthread_create");
 			return (EXIT_FAILURE);
-    	}
+		}
 		prog.philos[i]->thread = thread;
 		i++;
 	}
-	i = 0;
-	while (prog.philos[i])
-	{
-		pthread_mutex_lock(prog.all_philos_created_mutex);
-		prog.philos[i]->all_philos_created = 1;
-		pthread_mutex_unlock(prog.all_philos_created_mutex);
-		i++;
-	}
-
+	pthread_mutex_lock(prog.all_philos_created_mutex);
+	*prog.all_philos_created = 1;
+	pthread_mutex_unlock(prog.all_philos_created_mutex);
 	int	check_result = check(&prog);
 	if (check_result == -1)
 	{
