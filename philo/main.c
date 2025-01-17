@@ -15,7 +15,7 @@
 int	wait_results(t_philo *philo)
 {
 	void *result;
-	
+
 	if (!philo)
 		return (printf("ERROR wait_results: !philo\n"), -1);
 	
@@ -42,7 +42,7 @@ int	main(int argc, char **argv)
 	while (prog.philos[i])
 	{
 		pthread_t thread;
-		
+
 		prog.philos[i]->time = prog.start_time;
 		prog.philos[i]->start_time = prog.start_time;
 
@@ -64,7 +64,7 @@ int	main(int argc, char **argv)
 		pthread_mutex_lock(prog.print);
 		printf("check_result ERROR\n");
 		pthread_mutex_unlock(prog.print);
-		//return (free_prog(&prog), EXIT_FAILURE);	
+		// return (free_prog(&prog), EXIT_FAILURE);
 	}
 	i = 0;
 	while (prog.philos[i])
@@ -76,11 +76,10 @@ int	main(int argc, char **argv)
 			printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
 			pthread_mutex_unlock(prog.print);
 			free_prog(&prog);
-			//return (EXIT_FAILURE);
+			// return (EXIT_FAILURE);
 		}
 		i++;
 	}
-	
 	free_prog(&prog);
 	return (EXIT_SUCCESS);
 }
@@ -116,7 +115,6 @@ int	main(int argc, char **argv)
 // 199 605 200 200 10 +
 // 199 610 200 100 10 -
 // 199 610 200 200 10 ++
-
 
 // 4 410 200 100 10 ++
 // 4 410 200 200 10 ++

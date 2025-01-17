@@ -14,8 +14,8 @@
 
 void	*create_philosopher(void *arg)
 {
-	t_philo	*philo;
-	
+	t_philo *philo;
+
 	philo = (t_philo *)arg;
 	if (!philo || !philo->fork1)
 		return (NULL);
@@ -25,14 +25,14 @@ void	*create_philosopher(void *arg)
 	all_philos_created = *philo->all_philos_created;
 	pthread_mutex_unlock(philo->all_philos_created_mutex);
 	
-	while(!all_philos_created)
+	while	(!all_philos_created)
 	{
-		//usleep(50);
+		usleep(100);
 		pthread_mutex_lock(philo->all_philos_created_mutex);
 		all_philos_created = *philo->all_philos_created;
 		pthread_mutex_unlock(philo->all_philos_created_mutex);
 	}
-	
+
 	pthread_mutex_lock(philo->time_mutex);
 	philo->time = get_time();
 	pthread_mutex_unlock(philo->time_mutex);
@@ -48,18 +48,39 @@ void	*create_philosopher(void *arg)
 	}
 	else
 	{
-		//if (philo->i % 2 == 0 || (philo->number_of_philosophers % 2 != 0 && philo->i == philo->number_of_philosophers))
-		if (philo->i % 2 == 0)
-			usleep(philo->time_to_eat / 2 * 1000);
-		
-		while (1)
+		if (philo->number_of_philosophers % 2 != 0)
 		{
-			int result = philo_circle(philo);
+			if (philo->i == 1)
+				usleep((philo->time_to_eat / 2) * 3 * 1000);
+			if (philo->i % 2 == 0)
+				usleep((philo->time_to_eat / 2) * 1000);
+
+			int result = philo_circle_first(philo);
 			if (result == -1)
 				return (NULL);
 			else if (result == 0)
 				return (arg);
-			usleep(100);
+			while (1)
+			{
+				int result = philo_circle(philo);
+				if (result == -1)
+					return (NULL);
+				else if (result == 0)
+					return (arg);
+			}
+		}
+		else
+		{
+			if (philo->i % 2 == 0)
+				usleep((philo->time_to_eat / 2) * 1000);
+			while (1)
+			{
+				int result = philo_circle_first(philo);
+				if (result == -1)
+					return (NULL);
+				else if (result == 0)
+					return (arg);
+			}
 		}
 	}
 	return (NULL);

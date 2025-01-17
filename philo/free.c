@@ -38,17 +38,17 @@ void free_prog(t_prog *prog)
         free(prog->all_philos_created);
         prog->all_philos_created = NULL;
     }
-    // if (prog->is_dead_mutex)
-    // {
-    //     destroy_mutex(prog->is_dead_mutex);
-    //     free(prog->is_dead_mutex);
-    //     prog->is_dead_mutex = NULL;
-    // }
-    // if (prog->is_dead)
-    // {
-    //     free(prog->is_dead);
-    //     prog->is_dead = NULL;
-    // }
+    if (prog->is_dead_mutex)
+    {
+        destroy_mutex(prog->is_dead_mutex);
+        free(prog->is_dead_mutex);
+        prog->is_dead_mutex = NULL;
+    }
+    if (prog->is_dead)
+    {
+        free(prog->is_dead);
+        prog->is_dead = NULL;
+    }
 }
 
 void free_forks(pthread_mutex_t **forks)
@@ -73,7 +73,7 @@ void free_philos(t_philo **philos)
     int i;
 
     if (!philos)
-        return ;
+        return;
     i = 0;
     while (philos[i])
     {
@@ -89,14 +89,6 @@ void free_philos(t_philo **philos)
             free(philos[i]->time_mutex);
             philos[i]->time_mutex = NULL;
         }
-
-        if (philos[i]->is_dead_mutex)
-        {
-            destroy_mutex(philos[i]->is_dead_mutex);
-            free(philos[i]->is_dead_mutex);
-            philos[i]->is_dead_mutex = NULL;
-        }
-
         free(philos[i]);
         philos[i] = NULL;
         i++;
@@ -107,7 +99,7 @@ void free_philos(t_philo **philos)
 void destroy_mutex(pthread_mutex_t *mutex)
 {
     if (!mutex)
-        return ;
+        return;
     int result = pthread_mutex_destroy(mutex);
 
     if (result == EBUSY)
@@ -116,12 +108,12 @@ void destroy_mutex(pthread_mutex_t *mutex)
         if (pthread_mutex_unlock(mutex) != 0)
         {
             printf("ERROR: unlock mutex\n");
-            return ;
+            return;
         }
         result = pthread_mutex_destroy(mutex);
     }
     if (result != 0)
         printf("ERROR: destroy mutex\n");
-    //else
-        //printf("Mutex destroyed\n");
+    // else
+    // printf("Mutex destroyed\n");
 }
