@@ -28,9 +28,14 @@ int check(t_prog *prog)
 				return (printf("ERROR check: eat_result\n"), -1);
 			if (eat_result)
 			{
-				pthread_mutex_lock(prog->is_dead_mutex);
-				*prog->is_dead = 1;
-				pthread_mutex_unlock(prog->is_dead_mutex);
+				int i = 0;
+				while (prog->philos[i])
+				{
+					pthread_mutex_lock(prog->philos[i]->is_dead_mutex);
+					prog->philos[i]->is_dead = 1;
+					pthread_mutex_unlock(prog->philos[i]->is_dead_mutex);
+					i++;
+				}
 				return (1);
 			}
 		}
@@ -41,7 +46,7 @@ int check(t_prog *prog)
 		{
 			return 0;
 		}
-		usleep(50);
+		//usleep(100);
 	}
 	return -1;
 }
@@ -56,25 +61,75 @@ static int is_phil_dead(t_philo **philos, t_prog *prog)
 	while (philos[i])
 	{
 
-		pthread_mutex_lock(philos[i]->time_mutex);
-		long now = get_time();
-		if (now == -1)
-			return (pthread_mutex_unlock(philos[i]->time_mutex), -1);
-		if (now - philos[i]->time > (long)philos[i]->time_to_die)
+		if (prog->must_eat_times != -1)
 		{
-			pthread_mutex_unlock(philos[i]->time_mutex);
-			pthread_mutex_lock(prog->is_dead_mutex);
-			*prog->is_dead = 1;
-			pthread_mutex_unlock(prog->is_dead_mutex);
-			pthread_mutex_lock(prog->print);
-			long now2 = get_time();
-			//printf("%ld %ld %ld %d died\n", now, now2, now2 - now, philos[i]->i);
-			printf("%ld %d died\n", now2 - prog->start_time, philos[i]->i);
-			pthread_mutex_unlock(prog->print);
-			return (1);
+
+			pthread_mutex_lock(philos[i]->must_eat_times_mutex);
+			if (philos[i]->must_eat_times < 1)
+			{
+				pthread_mutex_unlock(philos[i]->must_eat_times_mutex);
+				i++;
+			}
+			else 
+			{
+				pthread_mutex_unlock(philos[i]->must_eat_times_mutex);
+
+				pthread_mutex_lock(philos[i]->time_mutex);
+				long now = get_time();
+				if (now - philos[i]->time > philos[i]->time_to_die)
+				{
+					pthread_mutex_unlock(philos[i]->time_mutex);
+
+					int z = 0;
+					while (philos[z])
+					{
+						pthread_mutex_lock(philos[z]->is_dead_mutex);
+						philos[z]->is_dead = 1;
+						pthread_mutex_unlock(philos[z]->is_dead_mutex);
+						z++;
+					}
+					pthread_mutex_lock(prog->print);
+					long now2 = get_time();
+					printf("%ld %ld %d died\n", now - philos[i]->time, now2 - now, philos[i]->i);
+					printf("\033[32;1m%ld %d died\033[0m\n", now - prog->start_time, philos[i]->i);
+
+					pthread_mutex_unlock(prog->print);
+					return (1);
+				}
+				pthread_mutex_unlock(philos[i]->time_mutex);
+
+				i++;
+			}
+			
 		}
-		pthread_mutex_unlock(philos[i]->time_mutex);
-		i++;
+		else
+		{
+			pthread_mutex_lock(philos[i]->time_mutex);
+			long now = get_time();
+			if (now - philos[i]->time > philos[i]->time_to_die)
+			{
+				pthread_mutex_unlock(philos[i]->time_mutex);
+				// pthread_mutex_lock(prog->is_dead_mutex);
+				// *prog->is_dead = 1;
+				// pthread_mutex_unlock(prog->is_dead_mutex);
+				int z = 0;
+				while (philos[z])
+				{
+					pthread_mutex_lock(philos[z]->is_dead_mutex);
+					philos[z]->is_dead = 1;
+					pthread_mutex_unlock(philos[z]->is_dead_mutex);
+					i++;
+				}
+				pthread_mutex_lock(prog->print);
+				long now2 = get_time();
+				printf("%ld %ld %ld %d died\n", now, now2, now2 - now, philos[i]->i);
+				// printf("%ld %d died\n", now - prog->start_time, philos[i]->i);
+				pthread_mutex_unlock(prog->print);
+				return (1);
+			}
+			pthread_mutex_unlock(philos[i]->time_mutex);
+			i++;
+		}
 	}
 	return (0);
 }

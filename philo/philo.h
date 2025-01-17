@@ -41,7 +41,7 @@ typedef struct s_philo
 	long time;
 	pthread_mutex_t *time_mutex;
 	
-	int *is_dead;
+	int is_dead;
 	pthread_mutex_t	*is_dead_mutex;
 
 	int	*all_philos_created;
@@ -63,8 +63,8 @@ typedef struct s_prog
 	pthread_mutex_t *all_philos_created_mutex;
 	long start_time;
 	
-	int *is_dead;
-	pthread_mutex_t	*is_dead_mutex;
+	// int *is_dead;
+	// pthread_mutex_t	*is_dead_mutex;
 } t_prog;
 
 int		init_prog(t_prog *prog);
@@ -78,6 +78,6 @@ void	destroy_mutex(pthread_mutex_t *mutex);
 int		check(t_prog *prog);
 int		check_if_dead(t_philo *philo);
 void	*create_philosopher(void *arg);
-long	get_time();
+long get_time();
 
 #endif

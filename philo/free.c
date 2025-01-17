@@ -38,17 +38,17 @@ void free_prog(t_prog *prog)
         free(prog->all_philos_created);
         prog->all_philos_created = NULL;
     }
-    if (prog->is_dead_mutex)
-    {
-        destroy_mutex(prog->is_dead_mutex);
-        free(prog->is_dead_mutex);
-        prog->is_dead_mutex = NULL;
-    }
-    if (prog->is_dead)
-    {
-        free(prog->is_dead);
-        prog->is_dead = NULL;
-    }
+    // if (prog->is_dead_mutex)
+    // {
+    //     destroy_mutex(prog->is_dead_mutex);
+    //     free(prog->is_dead_mutex);
+    //     prog->is_dead_mutex = NULL;
+    // }
+    // if (prog->is_dead)
+    // {
+    //     free(prog->is_dead);
+    //     prog->is_dead = NULL;
+    // }
 }
 
 void free_forks(pthread_mutex_t **forks)
@@ -89,6 +89,14 @@ void free_philos(t_philo **philos)
             free(philos[i]->time_mutex);
             philos[i]->time_mutex = NULL;
         }
+
+        if (philos[i]->is_dead_mutex)
+        {
+            destroy_mutex(philos[i]->is_dead_mutex);
+            free(philos[i]->is_dead_mutex);
+            philos[i]->is_dead_mutex = NULL;
+        }
+
         free(philos[i]);
         philos[i] = NULL;
         i++;

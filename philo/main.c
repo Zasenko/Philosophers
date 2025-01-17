@@ -80,6 +80,7 @@ int	main(int argc, char **argv)
 		}
 		i++;
 	}
+	
 	free_prog(&prog);
 	return (EXIT_SUCCESS);
 }

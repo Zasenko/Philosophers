@@ -14,7 +14,6 @@
 
 int check_if_dead(t_philo *philo);
 int take_fork(t_philo *philo, pthread_mutex_t *fork);
-int take_forks_test(t_philo *philo, pthread_mutex_t *fork1, pthread_mutex_t *fork2);
 int take_forks(t_philo *philo);
 int eating(t_philo *philo);
 int sleeping(t_philo *philo);
@@ -35,16 +34,19 @@ int philo_circle(t_philo *philo)
 		return (-1);
 	else if (take_result == 0)
 		return (0);
+
 	eating_result = eating(philo);
 	if (eating_result == -1)
 		return (-1);
 	else if (eating_result == 0)
 		return (0);
+
 	sleeping_result = sleeping(philo);
 	if (sleeping_result == -1)
 		return (-1);
 	else if (sleeping_result == 0)
 		return (0);
+
 	thinking_result = thinking(philo);
 	if (thinking_result == -1)
 		return (-1);
@@ -58,7 +60,7 @@ int check_if_dead(t_philo *philo)
 	if (!philo)
 		return (-1);
 	pthread_mutex_lock(philo->is_dead_mutex);
-	if (*philo->is_dead == 1)
+	if (philo->is_dead == 1)
 			return (pthread_mutex_unlock(philo->is_dead_mutex), 1);
 	pthread_mutex_unlock(philo->is_dead_mutex);
 	return (0);
@@ -84,72 +86,62 @@ int take_fork(t_philo *philo, pthread_mutex_t *fork)
 	return (1);
 }
 
-int take_forks_test(t_philo *philo, pthread_mutex_t *fork1, pthread_mutex_t *fork2)
-{
-	int res;
-
-	if (!philo || !fork1 || !fork2)
-		return (perror("take_forks_test error"), -1);
-	res = take_fork(philo, fork1);
-	if (res == -1)
-		return (-1);
-	else if (res == 0)
-		return (0);
-	res = take_fork(philo, fork2);
-	if (res == -1)
-		return (pthread_mutex_unlock(fork1), -1);
-	else if (res == 0)
-		return (pthread_mutex_unlock(fork1), 0);
-	return 1;
-}
-
 int take_forks(t_philo *philo)
 {
 	int fork_res;
 
-	if (!philo)
+	if (!philo || !philo->fork1 || !philo->fork2)
 		return (-1);
 
-	fork_res = take_forks_test(philo, philo->fork1, philo->fork2);
+	fork_res = take_fork(philo, philo->fork2);
 	if (fork_res == -1)
 		return (-1);
-	else if (!fork_res)
+	else if (fork_res == 0)
 		return (0);
+	fork_res = take_fork(philo, philo->fork1);
+	if (fork_res == -1)
+		return (pthread_mutex_unlock(philo->fork2), -1);
+	else if (fork_res == 0)
+		return (pthread_mutex_unlock(philo->fork2), 0);
 	return (1);
 }
 
-int	eating(t_philo *philo)
+int eating(t_philo *philo)
 {
-	long	time;
-//	int death_res;
+	long time;
+	//long now;
 
 	if (!philo)
 		return (-1);
-	pthread_mutex_lock(philo->time_mutex);
+
 	time = get_time();
+	// Обновление времени последней еды
+	pthread_mutex_lock(philo->time_mutex);
 	philo->time = time;
 	pthread_mutex_unlock(philo->time_mutex);
-	
+
+	// Вывод сообщения
 	pthread_mutex_lock(philo->print);
-	time = get_time();
 	printf("%ld %d is eating\n", time - philo->start_time, philo->i);
 	pthread_mutex_unlock(philo->print);
-	long now;
-	now = get_time();
-	while (now - time < philo->time_to_eat)
-	{
-		usleep(1000);
-		now = get_time();
-	}
+
+	// Уменьшаем количество оставшихся приемов пищи
 	pthread_mutex_lock(philo->must_eat_times_mutex);
 	philo->must_eat_times--;
 	pthread_mutex_unlock(philo->must_eat_times_mutex);
-	
-	pthread_mutex_unlock(philo->fork1);
+
+	// Эмулируем процесс еды
+	while (get_time() - time < philo->time_to_eat)
+	{
+		usleep(1000); // Оптимизированная задержка
+	}
+
+	// Освобождаем вилки
 	pthread_mutex_unlock(philo->fork2);
+	pthread_mutex_unlock(philo->fork1);
+
 	return (1);
 }
-
 int sleeping(t_philo *philo)
 {
 	long time;
@@ -167,12 +159,9 @@ int sleeping(t_philo *philo)
 	printf("%ld %d is sleeping\n", time - philo->start_time, philo->i);
 	pthread_mutex_unlock(philo->print);
 
-	long now;
-	now = get_time();
-	while (now - time < philo->time_to_sleep)
+	while (get_time() - time < philo->time_to_sleep)
 	{
 		usleep(1000);
-		now = get_time();
 	}
 	return (1);
 }

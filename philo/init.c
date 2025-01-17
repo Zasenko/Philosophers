@@ -36,16 +36,16 @@ int	init_prog(t_prog *prog)
 	if (pthread_mutex_init(prog->all_philos_created_mutex, NULL) != 0)
 		return (0);
 
-	prog->is_dead = malloc(sizeof(int));
-	if (!prog->is_dead)
-		return (0);
-	*prog->is_dead = 0;
+	// prog->is_dead = malloc(sizeof(int));
+	// if (!prog->is_dead)
+	// 	return (0);
+	// *prog->is_dead = 0;
 	
-	prog->is_dead_mutex = malloc(sizeof(pthread_mutex_t));
-	if (!prog->is_dead_mutex)
-		return (0);
-	if (pthread_mutex_init(prog->is_dead_mutex, NULL) != 0)
-		return (0);
+	// prog->is_dead_mutex = malloc(sizeof(pthread_mutex_t));
+	// if (!prog->is_dead_mutex)
+	// 	return (0);
+	// if (pthread_mutex_init(prog->is_dead_mutex, NULL) != 0)
+	// 	return (0);
 
 	prog->print = malloc(sizeof(pthread_mutex_t));
 	if (!prog->print)

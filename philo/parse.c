@@ -104,6 +104,13 @@ int	parse(t_prog *prog, int argc, char **argv)
 		}
 		else
 		{
+
+			// philos[i]->fork2 = forks[i];
+			// if (i == 0)
+			// 	philos[i]->fork1 = forks[number_of_philosophers - 1];
+			// else
+			// 	philos[i]->fork1 = forks[i - 1];
+
 			if (philos[i]->i % 2 == 0)
 			{
 				philos[i]->fork1 = forks[i - 1];
@@ -113,9 +120,14 @@ int	parse(t_prog *prog, int argc, char **argv)
 			{
 				philos[i]->fork1 = forks[i];
 				if (i == 0)
+				{
 					philos[i]->fork2 = forks[number_of_philosophers - 1];
+				}
 				else
+				{
 					philos[i]->fork2 = forks[i - 1];
+				}
+				
 			}
 		}
 		philos[i]->must_eat_times_mutex = malloc(sizeof(pthread_mutex_t));
@@ -146,11 +158,24 @@ int	parse(t_prog *prog, int argc, char **argv)
 			free_philos(philos);
 			return (-1);
 		}
-		philos[i]->is_dead_mutex = prog->is_dead_mutex;
-		philos[i]->is_dead = prog->is_dead;
+		// philos[i]->is_dead_mutex = prog->is_dead_mutex;
+		// philos[i]->is_dead = prog->is_dead;
+
+		// philos[i]->is_dead = malloc(sizeof(int));
+		// if (!philos[i]->is_dead)
+		// 	return (0);
+		philos[i]->is_dead = 0;
+
+		philos[i]->is_dead_mutex = malloc(sizeof(pthread_mutex_t));
+		if (!philos[i]->is_dead_mutex)
+			return (-1); //free
+		if (pthread_mutex_init(philos[i]->is_dead_mutex, NULL) != 0)
+			return (-1); //free
+
 		philos[i]->print = prog->print;
 		philos[i]->all_philos_created = prog->all_philos_created;
 		philos[i]->all_philos_created_mutex = prog->all_philos_created_mutex;
+
 		i++;
 	}
 	prog->philos = philos;

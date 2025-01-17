@@ -27,12 +27,16 @@ void	*create_philosopher(void *arg)
 	
 	while(!all_philos_created)
 	{
-		usleep(100);
+		//usleep(50);
 		pthread_mutex_lock(philo->all_philos_created_mutex);
 		all_philos_created = *philo->all_philos_created;
 		pthread_mutex_unlock(philo->all_philos_created_mutex);
 	}
 	
+	pthread_mutex_lock(philo->time_mutex);
+	philo->time = get_time();
+	pthread_mutex_unlock(philo->time_mutex);
+
 	if (philo->number_of_philosophers == 1)
 	{
 		pthread_mutex_lock(philo->print);
@@ -55,6 +59,7 @@ void	*create_philosopher(void *arg)
 				return (NULL);
 			else if (result == 0)
 				return (arg);
+			usleep(100);
 		}
 	}
 	return (NULL);
