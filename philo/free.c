@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 13:29:27 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/16 10:01:51 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/20 11:57:12 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,26 @@ void free_forks(pthread_mutex_t **forks)
     free(forks);
 }
 
+void free_phil(t_philo *phil)
+{
+    if (!phil)
+        return ;
+    if (phil->must_eat_times_mutex)
+    {
+        destroy_mutex(phil->must_eat_times_mutex);
+        free(phil->must_eat_times_mutex);
+        phil->must_eat_times_mutex = NULL;
+    }
+    if (phil->time_mutex)
+    {
+        destroy_mutex(phil->time_mutex);
+        free(phil->time_mutex);
+        phil->time_mutex = NULL;
+    }
+    free(phil);
+    return ;
+}
+
 void free_philos(t_philo **philos)
 {
     int i;
@@ -77,19 +97,7 @@ void free_philos(t_philo **philos)
     i = 0;
     while (philos[i])
     {
-        if (philos[i]->must_eat_times_mutex)
-        {
-            destroy_mutex(philos[i]->must_eat_times_mutex);
-            free(philos[i]->must_eat_times_mutex);
-            philos[i]->must_eat_times_mutex = NULL;
-        }
-        if (philos[i]->time_mutex)
-        {
-            destroy_mutex(philos[i]->time_mutex);
-            free(philos[i]->time_mutex);
-            philos[i]->time_mutex = NULL;
-        }
-        free(philos[i]);
+        free_phil(philos[i]);
         philos[i] = NULL;
         i++;
     }

@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/16 10:35:49 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/20 11:56:14 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,18 +67,20 @@ typedef struct s_prog
 	pthread_mutex_t *is_dead_mutex;
 } t_prog;
 
-int		init_prog(t_prog *prog);
-int		parse(t_prog *prog, int argc, char **argv);
-int		philo_circle(t_philo *philo);
-int		philo_circle_first(t_philo *philo);
-long	get_time();
-void	free_philos(t_philo **philos);
-void	free_forks(pthread_mutex_t **forks);
-void	free_prog(t_prog *prog);
-void	destroy_mutex(pthread_mutex_t *mutex);
-int		check(t_prog *prog);
-int		check_if_dead(t_philo *philo);
-void	*create_philosopher(void *arg);
-long	get_time();
+int				init_prog(t_prog *prog);
+pthread_mutex_t	*init_mutex(void);
+int				parse(t_prog *prog, int argc, char **argv);
+int				philo_circle(t_philo *philo);
+int				philo_circle_first(t_philo *philo);
+long			get_time();
+void			free_philos(t_philo **philos);
+void 			free_phil(t_philo *phil);
+void			free_forks(pthread_mutex_t **forks);
+void			free_prog(t_prog *prog);
+void			destroy_mutex(pthread_mutex_t *mutex);
+int				check(t_prog *prog);
+int				check_if_dead(t_philo *philo);
+void			*create_philosopher(void *arg);
+long			get_time();
 
 #endif
