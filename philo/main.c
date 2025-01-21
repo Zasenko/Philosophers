@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/16 13:20:26 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/21 12:19:50 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,69 +14,80 @@
 
 int	wait_results(t_philo *philo)
 {
-	void *result;
+	void	*result;
 
 	if (!philo)
-		return (printf("ERROR wait_results: !philo\n"), -1);
-	
-	if (pthread_join(philo->thread, &result) != 0)
-		return (perror("ERROR pthread_join \n"), -1);
-	if (result == NULL)
-	{
-		printf("Result %d NULL\n", philo->i);
 		return (-1);
+	if (pthread_join(philo->thread, &result) != 0)
+		return (-1);
+	if (result == NULL)
+		return (-1);
+	return (1);
+}
+
+//+
+int	create_thread(t_prog *prog, t_philo *phil)
+{
+	pthread_t	thread;
+
+	if (!prog || !phil)
+		return (0);
+	phil->time = prog->start_time;
+	phil->start_time = prog->start_time;
+	if (pthread_create(&thread, NULL, create_philosopher, (void *)phil) != 0)
+		return (0);
+	phil->thread = thread;
+	return (1);
+}
+
+//+
+int	create_threads(t_prog *prog)
+{
+	int	i;
+
+	if (!prog)
+		return (0);
+	prog->start_time = get_time();
+	if (!prog->start_time)
+		return (0);
+	i = 0;
+	while (prog->philos[i])
+	{
+		if (!create_thread(prog, prog->philos[i]))
+			return (0);
+		i++;
 	}
+	pthread_mutex_lock(prog->all_philos_created_mutex);
+	*prog->all_philos_created = 1;
+	pthread_mutex_unlock(prog->all_philos_created_mutex);
 	return (1);
 }
 
 int	main(int argc, char **argv)
 {
-	t_prog prog;
+	t_prog	prog;
 
 	if (!init_prog(&prog))
 		return (free_prog(&prog), EXIT_FAILURE);
-	if (parse(&prog, argc, argv) == -1)
+	if (!parse(&prog, argc, argv))
 		return (free_prog(&prog), EXIT_FAILURE);
-	prog.start_time = get_time();
-	int i = 0;
-	while (prog.philos[i])
-	{
-		pthread_t thread;
+	if (!create_threads(&prog))
+		return (free_prog(&prog), EXIT_FAILURE);
 
-		prog.philos[i]->time = prog.start_time;
-		prog.philos[i]->start_time = prog.start_time;
-
-		if (pthread_create(&thread, NULL, create_philosopher, (void *)prog.philos[i]) != 0)
-		{
-			free_prog(&prog);
-			perror("pthread_create");
-			return (EXIT_FAILURE);
-		}
-		prog.philos[i]->thread = thread;
-		i++;
-	}
-	pthread_mutex_lock(prog.all_philos_created_mutex);
-	*prog.all_philos_created = 1;
-	pthread_mutex_unlock(prog.all_philos_created_mutex);
 	int	check_result = check(&prog);
 	if (check_result == -1)
 	{
-		pthread_mutex_lock(prog.print);
-		printf("check_result ERROR\n");
-		pthread_mutex_unlock(prog.print);
-		// return (free_prog(&prog), EXIT_FAILURE);
+		//todo should i kill them?
+		return (free_prog(&prog), EXIT_FAILURE);
 	}
-	i = 0;
+	int i = 0;
 	while (prog.philos[i])
 	{
 		int result = wait_results(prog.philos[i]);
 		if (result == -1)
 		{
-			pthread_mutex_lock(prog.print);
-			printf("ERROR wait_results:	 philosopher: %d\n", prog.philos[i]->i);
-			pthread_mutex_unlock(prog.print);
 			free_prog(&prog);
-			// return (EXIT_FAILURE);
+			return (EXIT_FAILURE);
 		}
 		i++;
 	}
