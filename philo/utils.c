@@ -6,27 +6,26 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 13:01:21 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/21 12:02:23 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/21 13:52:55 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long get_time()
+long	get_time(void)
 {
-	struct timeval tv;
+	struct timeval	tv;
 
 	if (gettimeofday(&tv, NULL) == -1)
 		return (0);
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-//+ 0 1
-int ft_sleep(int sleep_time)
+int	ft_sleep(int sleep_time)
 {
 	long	time;
 	long	now;
-	
+
 	time = get_time();
 	now = get_time();
 	if (!time || !now)
@@ -41,7 +40,7 @@ int ft_sleep(int sleep_time)
 	return (1);
 }
 
-int print_status(t_philo *phil, int status)
+int	print_status(t_philo *phil, int status)
 {
 	long	time;
 	int		death_res;

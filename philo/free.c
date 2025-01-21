@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 13:29:27 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/21 12:58:08 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/21 13:45:53 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,12 @@
 
 void	free_prog_mutexes(t_prog *prog);
 
-//+
 void	free_prog(t_prog *prog)
 {
 	if (!prog)
 		return ;
 	free_forks(prog->forks);
-	prog->forks = NULL;	
+	prog->forks = NULL;
 	free_philos(prog->philos);
 	prog->philos = NULL;
 	if (prog->all_philos_created)
@@ -37,7 +36,6 @@ void	free_prog(t_prog *prog)
 	free_prog_mutexes(prog);
 }
 
-//+
 void	free_prog_mutexes(t_prog *prog)
 {
 	if (!prog)
@@ -62,7 +60,6 @@ void	free_prog_mutexes(t_prog *prog)
 	}
 }
 
-//+
 void	free_forks(pthread_mutex_t **forks)
 {
 	int	i;
@@ -80,7 +77,6 @@ void	free_forks(pthread_mutex_t **forks)
 	free(forks);
 }
 
-//+
 void	free_phil(t_philo *phil)
 {
 	if (!phil)
@@ -93,7 +89,6 @@ void	free_phil(t_philo *phil)
 	}
 	if (phil->time_mutex)
 	{
-
 		destroy_mutex(phil->time_mutex);
 		free(phil->time_mutex);
 		phil->time_mutex = NULL;
@@ -102,13 +97,12 @@ void	free_phil(t_philo *phil)
 	return ;
 }
 
-//+
 void	free_philos(t_philo **philos)
 {
 	int	i;
 
 	if (!philos)
-		return;
+		return ;
 	i = 0;
 	while (philos[i])
 	{
@@ -119,13 +113,12 @@ void	free_philos(t_philo **philos)
 	free(philos);
 }
 
-//+
 void	destroy_mutex(pthread_mutex_t *mutex)
 {
 	int	result;
 
 	if (!mutex)
-		return;
+		return ;
 	result = pthread_mutex_destroy(mutex);
 	if (result == EBUSY)
 		pthread_mutex_unlock(mutex);

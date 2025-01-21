@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/21 12:19:50 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/21 13:07:29 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ int	main(int argc, char **argv)
 {
 	t_prog	prog;
 
+	prog = new_prog();
 	if (!init_prog(&prog))
 		return (free_prog(&prog), EXIT_FAILURE);
 	if (!parse(&prog, argc, argv))

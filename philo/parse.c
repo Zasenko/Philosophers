@@ -6,18 +6,17 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 12:19:47 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/21 13:02:21 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/21 14:00:45 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-//+
 pthread_mutex_t	**init_forks(int num)
 {
 	pthread_mutex_t	**forks;
 	int				i;
-	
+
 	forks = (pthread_mutex_t **)malloc(sizeof(pthread_mutex_t *) * (num + 1));
 	if (!forks)
 		return (NULL);
@@ -38,7 +37,6 @@ pthread_mutex_t	**init_forks(int num)
 	return (forks);
 }
 
-//+
 int	give_forks(t_prog *prog, t_philo *phil, int i)
 {
 	if (!prog || !phil)
@@ -67,10 +65,9 @@ int	give_forks(t_prog *prog, t_philo *phil, int i)
 	return (1);
 }
 
-//+
-t_philo *init_philos(t_prog *prog, int i)
+t_philo	*init_philos(t_prog *prog, int i)
 {
-	t_philo *phil;
+	t_philo	*phil;
 
 	if (!prog || !prog->forks)
 		return (NULL);
@@ -92,15 +89,14 @@ t_philo *init_philos(t_prog *prog, int i)
 	phil->time_mutex = init_mutex();
 	if (!phil->time_mutex || !phil->must_eat_times_mutex || !give_forks(prog, phil, i))
 		return (free_phil(phil), NULL);
-	return phil;
+	return (phil);
 }
 
-//+
 t_philo	**create_philos(t_prog *prog)
 {
 	t_philo	**philos;
 	int		i;
-	
+
 	philos = malloc(sizeof(t_philo *) * (prog->number_of_philosophers + 1));
 	if (!philos)
 		return (printf("Malloc error\n"), NULL);
@@ -124,6 +120,9 @@ t_philo	**create_philos(t_prog *prog)
 int parse(t_prog *prog, int argc, char **argv)
 {
 	// TODO TRIM each arg
+	// check +-0123456789
+	// chech INT MIN INT MAX
+	//check > 0
 	if (!prog || !argv || !*argv)
 		return (0);
 	if (argc < 5 || argc > 6)

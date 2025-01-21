@@ -6,13 +6,12 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 13:01:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/21 12:34:25 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/21 14:11:20 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-//+
 int	wait_philos_creations(t_philo *philo)
 {
 	int	all_philos_created;
@@ -37,7 +36,6 @@ int	wait_philos_creations(t_philo *philo)
 	return (1);
 }
 
-//+
 int	one_philo_life(t_philo *phil)
 {
 	if (!phil)
@@ -45,14 +43,13 @@ int	one_philo_life(t_philo *phil)
 	if (print_status(phil, 1) == -1)
 		return (0);
 	usleep(phil->time_to_die);
-	return 1;
+	return (1);
 }
 
-int philo_life(t_philo *philo)
+int	philo_life(t_philo *philo)
 {
 	if (!philo)
 		return (0);
-	
 	if (philo->number_of_philosophers % 2 != 0)
 	{
 		if (philo->i == 1)
@@ -65,7 +62,6 @@ int philo_life(t_philo *philo)
 		if (philo->i % 2 == 0)
 			usleep((philo->time_to_eat / 2) * 1000);
 	}
-
 	int result = philo_circle(philo);
 	if (result == -1)
 		return (0);
@@ -96,7 +92,6 @@ int philo_life(t_philo *philo)
 	return (0);
 }
 
-//+
 void	*create_philosopher(void *arg)
 {
 	t_philo	*philo;
