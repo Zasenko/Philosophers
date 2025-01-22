@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 15:07:14 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/22 11:01:06 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/22 13:38:09 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ static int	is_all_philos_eat(t_philo **philos, t_prog *prog)
 			pthread_mutex_unlock(philos[i]->must_eat_times_mutex);
 			i++;
 		}
-		return (1);	
+		return (1);
 	}
 	return (0);
 }
