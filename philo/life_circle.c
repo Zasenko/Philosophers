@@ -6,18 +6,15 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 10:31:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/21 14:09:58 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/22 11:11:10 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	check_if_dead(t_philo *philo);
-int	take_fork(t_philo *philo, pthread_mutex_t *fork);
-int	take_forks(t_philo *philo);
-int	eating(t_philo *philo);
-int	sleeping(t_philo *philo);
-int	thinking(t_philo *philo);
+static int	eating(t_philo *philo);
+static int	sleeping(t_philo *philo);
+static int	thinking(t_philo *philo);
 
 int	philo_circle(t_philo *philo)
 {
@@ -54,65 +51,7 @@ int	check_if_dead(t_philo *philo)
 	return (0);
 }
 
-int	take_fork(t_philo *philo, pthread_mutex_t *fork)
-{
-	int		result;
-
-	if (!philo || !fork)
-		return (-1);
-	pthread_mutex_lock(fork);
-	result = print_status(philo, 1);
-	if (result == -1)
-		return (pthread_mutex_unlock(fork), -1);
-	else if (result == 0)
-		return (pthread_mutex_unlock(fork), 0);
-	return (1);
-}
-
-int	take_forks(t_philo *philo)
-{
-	int	res;
-
-	if (!philo || !philo->fork1 || !philo->fork2)
-		return (-1);
-	res = take_fork(philo, philo->fork1);
-	if (res == -1)
-		return (-1);
-	else if (res == 0)
-		return (0);
-	res = take_fork(philo, philo->fork2);
-	if (res == -1)
-		return (pthread_mutex_unlock(philo->fork1), -1);
-	else if (res == 0)
-		return (pthread_mutex_unlock(philo->fork1), 0);
-	return (1);
-}
-
-int	update_time(t_philo *philo)
-{
-	long	time;
-
-	if (!philo || !philo->time_mutex)
-		return (0);
-	pthread_mutex_lock(philo->time_mutex);
-	time = get_time();
-	if (!time)
-		return (pthread_mutex_unlock(philo->time_mutex), 0);
-	philo->time = time;
-	pthread_mutex_unlock(philo->time_mutex);
-	return (1);
-}
-
-int unlock_forks(t_philo *philo)
-{
-	if (!philo || !philo->fork1 || !philo->fork2)
-		return (-1);
-	pthread_mutex_unlock(philo->fork1);
-	pthread_mutex_unlock(philo->fork2);
-	return (1);
-}
-
-int	eating(t_philo *philo)
+static int	eating(t_philo *philo)
 {
 	int		res;
 
@@ -131,7 +70,7 @@ int	eating(t_philo *philo)
 	return (unlock_forks(philo));
 }
 
-int	sleeping(t_philo *philo)
+static int	sleeping(t_philo *philo)
 {
 	int		res;
 
@@ -147,7 +86,7 @@ int	sleeping(t_philo *philo)
 	return (1);
 }
 
-int	thinking(t_philo *philo)
+static int	thinking(t_philo *philo)
 {
 	int		res;
 
