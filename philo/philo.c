@@ -46,10 +46,40 @@ int	one_philo_life(t_philo *phil)
 	return (1);
 }
 
-int	philo_life(t_philo *philo)
+int	start_infinity_circle(t_philo *philo)
 {
+	if (!philo || !philo->time_mutex)
+		return (-1);
+	while (1)
+	{
+		pthread_mutex_lock(philo->time_mutex);
+		long time = philo->time;
+		pthread_mutex_unlock(philo->time_mutex);
+		long now = get_time();
+		if (!now)
+			return (-1);
+		while (now - time < (philo->time_to_die - (philo->time_to_eat / 2)))
+		{
+			usleep(1000);
+			now = get_time();
+			if (!now)
+				return (-1);
+		}
+		int result = philo_circle(philo);
+		if (result == -1)
+			return (-1);
+		else if (result == 0)
+			return (0);
+	}
+	return (-1);
+}
+
+int start_first_circle(t_philo *philo)
+{
+	int	result;
+
 	if (!philo)
-		return (0);
+		return (-1);
 	if (philo->number_of_philosophers % 2 != 0)
 	{
 		if (philo->i == 1)
@@ -62,34 +92,29 @@ int	philo_life(t_philo *philo)
 		if (philo->i % 2 == 0)
 			usleep((philo->time_to_eat / 2) * 1000);
 	}
-	int result = philo_circle(philo);
+	result = philo_circle(philo);
+	if (result == -1)
+		return (-1);
+	else if (result == 0)
+		return (0);
+	return (1);
+}
+
+int	philo_life(t_philo *philo)
+{
+	int result;
+	
+	if (!philo)
+		return (0);
+	result = start_first_circle(philo);
 	if (result == -1)
 		return (0);
 	else if (result == 0)
 		return (1);
-
-	while (1)
-	{
-		pthread_mutex_lock(philo->time_mutex);
-		long time = philo->time;
-		pthread_mutex_unlock(philo->time_mutex);
-		long now = get_time();
-		if (!now)
-			return (0);
-		while (now - time < (philo->time_to_die - (philo->time_to_eat / 2)))
-		{
-			usleep(1000);
-			now = get_time();
-			if (!now)
-				return (0);
-		}
-		int result = philo_circle(philo);
-		if (result == -1)
-			return (0);
-		else if (result == 0)
-			return (1);
-	}
-	return (0);
+	result = start_infinity_circle(philo);
+	if (result == -1)
+		return (0);
+	return (1);
 }
 
 void	*create_philosopher(void *arg)

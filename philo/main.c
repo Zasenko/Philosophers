@@ -25,7 +25,6 @@ int	wait_results(t_philo *philo)
 	return (1);
 }
 
-//+
 int	create_thread(t_prog *prog, t_philo *phil)
 {
 	pthread_t	thread;
@@ -40,7 +39,6 @@ int	create_thread(t_prog *prog, t_philo *phil)
 	return (1);
 }
 
-//+
 int	create_threads(t_prog *prog)
 {
 	int	i;
