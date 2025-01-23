@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 10:49:57 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/22 10:50:26 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 12:09:44 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,10 @@
 int	wait_philos_creations(t_philo *philo)
 {
 	int	all_philos_created;
+	int	death_res;
 
 	if (!philo)
-		return (0);
+		return (-1);
 	pthread_mutex_lock(philo->all_philos_created_mutex);
 	all_philos_created = *philo->all_philos_created;
 	pthread_mutex_unlock(philo->all_philos_created_mutex);
@@ -26,20 +27,25 @@ int	wait_philos_creations(t_philo *philo)
 		pthread_mutex_lock(philo->all_philos_created_mutex);
 		all_philos_created = *philo->all_philos_created;
 		pthread_mutex_unlock(philo->all_philos_created_mutex);
+		death_res = check_if_dead(philo);
+		if (death_res == -1)
+			return (-1);
+		else if (death_res)
+			return (0);
 		usleep(100);
 	}
 	pthread_mutex_lock(philo->time_mutex);
 	philo->time = get_time();
 	if (!philo->time)
-		return (pthread_mutex_unlock(philo->time_mutex), 0);
-	pthread_mutex_unlock(philo->time_mutex);
-	return (1);
+		return (pthread_mutex_unlock(philo->time_mutex), -1);
+	return (pthread_mutex_unlock(philo->time_mutex), 1);
 }
 
 int	wait_hungry(t_philo *philo)
 {
 	long	time;
 	long	now;
+	int		death_res;
 
 	if (!philo || !philo->time_mutex)
 		return (-1);
@@ -51,7 +57,12 @@ int	wait_hungry(t_philo *philo)
 		return (-1);
 	while (now - time < (philo->time_to_die - (philo->time_to_eat / 2)))
 	{
-		usleep(1000);
+		usleep(100);
+		death_res = check_if_dead(philo);
+		if (death_res == -1)
+			return (-1);
+		else if (death_res)
+			return (0);
 		now = get_time();
 		if (!now)
 			return (-1);

@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/07 13:01:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/22 10:50:41 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 12:12:25 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,11 @@ int	start_infinity_circle(t_philo *philo)
 		return (-1);
 	while (1)
 	{
-		if (wait_hungry(philo) == -1)
+		result = wait_hungry(philo);
+		if (result == -1)
 			return (-1);
+		else if (result == 0)
+			return (0);
 		result = philo_circle(philo);
 		if (result == -1)
 			return (-1);
@@ -87,12 +90,16 @@ int	philo_life(t_philo *philo)
 void	*create_philosopher(void *arg)
 {
 	t_philo	*philo;
+	int		result;
 
 	philo = (t_philo *)arg;
 	if (!philo || !philo->fork1)
 		return (NULL);
-	if (!wait_philos_creations(philo))
+	result = wait_philos_creations(philo);
+	if (result == -1)
 		return (NULL);
+	else if (result == 0)
+		return (arg);
 	if (philo->number_of_philosophers == 1)
 	{
 		if (!one_philo_life(philo))

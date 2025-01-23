@@ -6,23 +6,43 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/21 13:07:29 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 12:12:07 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	wait_results(t_philo *philo)
+int	wait_result(t_philo *philo)
 {
 	void	*result;
 
 	if (!philo)
-		return (-1);
+		return (0);
 	if (pthread_join(philo->thread, &result) != 0)
-		return (-1);
+		return (0);
 	if (result == NULL)
-		return (-1);
+		return (0);
 	return (1);
+}
+
+int	wait_finishing(t_prog *prog)
+{
+	int	i;
+	int	result;
+	int	flag;
+
+	if (!prog)
+		return (0);
+	flag = 1;
+	i = 0;
+	while (prog->philos[i])
+	{
+		result = wait_result(prog->philos[i]);
+		if (!result)
+			flag = 0;
+		i++;
+	}
+	return (flag);
 }
 
 int	create_thread(t_prog *prog, t_philo *phil)
@@ -64,6 +84,7 @@ int	create_threads(t_prog *prog)
 int	main(int argc, char **argv)
 {
 	t_prog	prog;
+	int		result;
 
 	prog = new_prog();
 	if (!init_prog(&prog))
@@ -71,72 +92,21 @@ int	main(int argc, char **argv)
 	if (!parse(&prog, argc, argv))
 		return (free_prog(&prog), EXIT_FAILURE);
 	if (!create_threads(&prog))
-		return (free_prog(&prog), EXIT_FAILURE);
-
-	int	check_result = check(&prog);
-	if (check_result == -1)
 	{
-		//todo should i kill them?
+		make_philos_dead(&prog);
 		return (free_prog(&prog), EXIT_FAILURE);
 	}
-	int i = 0;
-	while (prog.philos[i])
+	result = check(&prog);
+	if (result == -1)
 	{
-		int result = wait_results(prog.philos[i]);
-		if (result == -1)
-		{
-			free_prog(&prog);
-			return (EXIT_FAILURE);
-		}
-		i++;
+		make_philos_dead(&prog);
+		wait_finishing(&prog);
+		return (free_prog(&prog), EXIT_FAILURE);
 	}
-	free_prog(&prog);
-	return (EXIT_SUCCESS);
+	result = wait_finishing(&prog);
+	if (!result)
+		return (free_prog(&prog), EXIT_FAILURE);
+	return (free_prog(&prog), EXIT_SUCCESS);
 }
 
 //valgrind --tool=helgrind ./philo 5 800 200 200 3
-
-// ---die---
-
-// 1 800 200 100 10 +
-// 1 800 200 200 10 +
-// 3 599 200 200 10 +
-// 31 599 200 200 10 +
-// 131 596 200 200 10 +
-
-// 4 310 200 100 10 +
-
-// ---not die---
-
-// 5 601 200 200 10 ++
-// 5 610 200 100 10 -
-// 5 610 200 200 10 ++
-// 5 800 200 200 7 +
-// 5 800 200 200 10 +-
-// 31 601 200 200 10
-// 31 605 200 200 10 -
-// 31 610 200 100 10 -
-// 31 610 200 200 10 +
-// 131 601 200 200 10
-// 131 605 200 200 10
-// 131 610 200 100 10 -
-// 131 610 200 200 10
-// 199 601 200 200 10 +
-// 199 605 200 200 10 +
-// 199 610 200 100 10 -
-// 199 610 200 200 10 ++
-
-// 4 410 200 100 10 ++
-// 4 410 200 200 10 ++
-// 50 401 200 200 10 -
-// 50 405 200 200 10 +
-// 50 410 200 200 10 +
-// 50 410 200 100 10 +
-// 130 401 200 200 10 -
-// 130 405 200 100 10 -
-// 130 410 200 100 10 --
-// 130 410 200 200 10 -
-// 198 410 200 100 10 ++
-// 198 405 200 200 10 ++
-// 198 610 200 200 10 ++
-// 198 800 200 200 10 --

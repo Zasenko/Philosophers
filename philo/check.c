@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 15:07:14 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/22 13:38:09 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 11:45:38 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 static int	is_phil_dead(t_philo **philos, t_prog *prog);
 static int	is_all_philos_eat(t_philo **philos, t_prog *prog);
-static int	make_philos_dead(t_prog *prog);
 static int	print_death(t_prog *prog, int phil_i);
 
 int	check(t_prog *prog)
@@ -42,6 +41,16 @@ int	check(t_prog *prog)
 		usleep(50);
 	}
 	return (-1);
+}
+
+int	make_philos_dead(t_prog *prog)
+{
+	if (!prog || !prog->is_dead_mutex)
+		return (0);
+	pthread_mutex_lock(prog->is_dead_mutex);
+	*prog->is_dead = 1;
+	pthread_mutex_unlock(prog->is_dead_mutex);
+	return (1);
 }
 
 static int	is_phil_dead(t_philo **philos, t_prog *prog)
@@ -98,16 +107,6 @@ static int	is_all_philos_eat(t_philo **philos, t_prog *prog)
 	return (0);
 }
 
-static int	make_philos_dead(t_prog *prog)
-{
-	if (!prog || !prog->is_dead_mutex)
-		return (0);
-	pthread_mutex_lock(prog->is_dead_mutex);
-	*prog->is_dead = 1;
-	pthread_mutex_unlock(prog->is_dead_mutex);
-	return (1);
-}
-
 static int	print_death(t_prog *prog, int phil_i)
 {
 	long	time;
@@ -118,7 +117,7 @@ static int	print_death(t_prog *prog, int phil_i)
 	time = get_time();
 	if (!time)
 		return (pthread_mutex_unlock(prog->print), -1);
-	printf("\033[31m]%ld %d died\033[31m]\n", time - prog->start_time, phil_i);
+	printf("%ld %d died\n", time - prog->start_time, phil_i);
 	pthread_mutex_unlock(prog->print);
 	return (1);
 }

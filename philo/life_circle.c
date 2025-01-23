@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 10:31:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/22 11:11:10 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 11:30:39 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,11 @@ static int	eating(t_philo *philo)
 		return (unlock_forks(philo), -1);
 	else if (res == 0)
 		return (unlock_forks(philo), 0);
-	if (!ft_sleep(philo->time_to_eat))
+	res = ft_sleep(philo->time_to_eat, philo);
+	if (res == -1)
 		return (unlock_forks(philo), -1);
+	else if (res == 0)
+		return (unlock_forks(philo), 0);
 	pthread_mutex_lock(philo->must_eat_times_mutex);
 	philo->must_eat_times--;
 	pthread_mutex_unlock(philo->must_eat_times_mutex);
@@ -81,8 +84,11 @@ static int	sleeping(t_philo *philo)
 		return (-1);
 	else if (res == 0)
 		return (0);
-	if (!ft_sleep(philo->time_to_sleep))
+	res = ft_sleep(philo->time_to_eat, philo);
+	if (res == -1)
 		return (-1);
+	else if (res == 0)
+		return (0);
 	return (1);
 }
 

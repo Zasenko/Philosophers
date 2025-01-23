@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 11:09:42 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/22 11:11:57 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 11:33:04 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,21 +21,27 @@ long	get_time(void)
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-int	ft_sleep(int sleep_time)
+int	ft_sleep(int sleep_time, t_philo *phil)
 {
 	long	time;
 	long	now;
+	int		death_res;
 
 	time = get_time();
 	now = get_time();
 	if (!time || !now)
-		return (0);
+		return (-1);
 	while (now - time < sleep_time)
 	{
-		usleep(1000);
+		usleep(100);
+		death_res = check_if_dead(phil);
+		if (death_res == -1)
+			return (-1);
+		else if (death_res)
+			return (0);
 		now = get_time();
 		if (!now)
-			return (0);
+			return (-1);
 	}
 	return (1);
 }

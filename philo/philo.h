@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/22 11:10:27 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 11:46:04 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,12 @@ int				check(t_prog *prog);
 int				check_if_dead(t_philo *philo);
 void			*create_philosopher(void *arg);
 long			get_time(void);
-int				ft_sleep(int sleep_time);
+int				ft_sleep(int sleep_time, t_philo *phil);
 int				print_status(t_philo *phil, int status);
 int				wait_philos_creations(t_philo *philo);
 int				wait_hungry(t_philo *philo);
 int				take_forks(t_philo *philo);
 int				unlock_forks(t_philo *philo);
 int				update_time(t_philo *philo);
+int				make_philos_dead(t_prog *prog);
 #endif

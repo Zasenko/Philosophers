@@ -6,15 +6,15 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 12:19:47 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/22 13:53:43 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 11:41:51 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int ft_strlen(char *s)
+int	ft_strlen(const char *s)
 {
-	int i;
+	int	i;
 
 	if (!s)
 		return (0);
@@ -220,13 +220,15 @@ int	ft_isdigit(int c)
 	return (0);
 }
 
-int check_simbols(char *str)
+int	check_simbols(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (str[i] == '+' || str[i] == '-')
 		i++;
+	if (str[i] == '\0')
+		return (0);
 	while (str[i])
 	{
 		if (ft_isdigit(str[i]))
@@ -239,14 +241,20 @@ int check_simbols(char *str)
 	return (1);
 }
 
+void	free_str(char *s)
+{
+	if (s)
+		free(s);
+}
+
 int	ft_atoi(const char *nptr)
 {
 	int		i;
-	long		sing;
+	long	sing;
 	long	result;
 
 	i = 0;
-	sing = +1;
+	sing = 1;
 	result = 0;
 	while (nptr[i] == ' ' || (nptr[i] >= '\t' && nptr[i] <= '\r'))
 		i++;
@@ -261,86 +269,67 @@ int	ft_atoi(const char *nptr)
 		result = result * 10 + (nptr[i] - '0');
 		i++;
 	}
-	if ((result * sing) < -2147483648)
-	{
-		printf("Error: Argument is too small number\n");
-		return (-1);
-	}
+	if ((result * sing) < 1)
+		return (printf("Error: Argument is negative or 0\n"), 0);
 	else if ((result * sing) > 2147483647)
-	{
-		//error
-		printf("Error: Argument is too big number\n");
-		return (-1);
-	}
+		return (printf("Error: Argument is too big number\n"), 0);
 	return ((int)(result * sing));
 }
 
-int make_number(char *str)
+int	make_number(char *str)
 {
-	if (!str)
-		return (-1);
-	char *trim_str = ft_strtrim(str, " \t");//malloc
-	if (!trim_str)
-		return (-1);
-	if (!ft_strlen(trim_str))
-	{
-		printf("Error: empty argument\n");
-		//free trim_str
-		return (-1);
-	}
-	if (!check_simbols(trim_str))
-	{
-		printf("Error: Argument has a whong simbol\n");
-		//free trim_str
-		return (-1);
-	}
-	if (ft_strlen(trim_str) > 11)
-	{
-		//free trim_str
-		printf("Error: Argument is not INT\n");
-		return (-1);
-	}
-	
-	int num = ft_atoi(trim_str);
-	//free trim_str
-	if (num < 1)
-	{
-		printf("Error: Argument has a whong simbol\n");
+	int		num;
+	char	*trim_str;
 
-	}
-	return num;
-	//free trim_str
-	//TODO TRIM each arg
-	//check +-0123456789
-	//chech INT MIN INT MAX
-	//check > 0
+	if (!str)
+		return (0);
+	trim_str = ft_strtrim(str, " \t");
+	if (!trim_str)
+		return (0);
+	if (!ft_strlen(trim_str))
+		return (free_str(trim_str), printf("Error: empty argument\n"), 0);
+	if (!check_simbols(trim_str))
+		return (free_str(trim_str), printf("Error: Wrong argument\n"), 0);
+	if (ft_strlen(trim_str) > 11)
+		return (free_str(trim_str), printf("Error: Argument is not INT\n"), 0);
+	num = ft_atoi(trim_str);
+	return (free_str(trim_str), num);
 }
 
-int parse(t_prog *prog, int argc, char **argv)
+int	parse_arg(t_prog *prog, int argc, char **argv)
 {
 	if (!prog || !argv)
 		return (0);
 	if (argc < 5 || argc > 6)
 		return (printf("Error: Wrong arguments count\n"), 0);
-
-	// TODO TRIM each arg
-	// check +-0123456789
-	// chech INT MIN INT MAX
-	//check > 0
-	int number_of_philosophers = atoi(argv[1]); // todo atoi
-	if (number_of_philosophers < 1)
-		return (printf("Wrong philosophers count. It should be > 0\n"), 0);
-	prog->number_of_philosophers = number_of_philosophers;
-	prog->time_to_die = atoi(argv[2]);	 // todo atoi
-	prog->time_to_eat = atoi(argv[3]);	 // todo atoi
-	prog->time_to_sleep = atoi(argv[4]); // todo atoi
+	prog->number_of_philosophers = make_number(argv[1]);
+	if (!prog->number_of_philosophers)
+		return (0);
+	prog->time_to_die = make_number(argv[2]);
+	if (!prog->time_to_die)
+		return (0);
+	prog->time_to_eat = make_number(argv[3]);
+	if (!prog->time_to_eat)
+		return (0);
+	prog->time_to_sleep = make_number(argv[4]);
+	if (!prog->time_to_sleep)
+		return (0);
 	if (argc == 6)
 	{
-		prog->must_eat_times = atoi(argv[5]); // todo atoi
-		if (prog->must_eat_times < 1)
-			return (printf("number of times each philosopher must eat should be > 0\n"), 0);
+		prog->must_eat_times = make_number(argv[5]);
+		if (!prog->must_eat_times)
+			return (0);
 	}
-	prog->forks = init_forks(number_of_philosophers);
+	return (1);
+}
+
+int	parse(t_prog *prog, int argc, char **argv)
+{
+	if (!prog || !argv)
+		return (0);
+	if (!parse_arg(prog, argc, argv))
+		return (0);
+	prog->forks = init_forks(prog->number_of_philosophers);
 	if (!prog->forks)
 		return (0);
 	prog->philos = create_philos(prog);
