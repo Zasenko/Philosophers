@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/23 12:53:42 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 15:52:41 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ int	main(int argc, char **argv)
 	if (!create_threads(&prog))
 	{
 		make_philos_dead(&prog);
+		wait_finishing(&prog);
 		return (free_prog(&prog), EXIT_FAILURE);
 	}
 	result = check(&prog);
