@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 13:29:38 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/23 11:20:07 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 12:51:20 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,26 +40,6 @@ int	init_prog_mutexes(t_prog *prog)
 	return (1);
 }
 
-t_prog	new_prog(void)
-{
-	t_prog	prog;
-
-	prog.number_of_philosophers = 0;
-	prog.time_to_die = 0;
-	prog.must_eat_times = -1;
-	prog.time_to_eat = 0;
-	prog.time_to_sleep = 0;
-	prog.philos = NULL;
-	prog.forks = NULL;
-	prog.start_time = 0;
-	prog.all_philos_created = NULL;
-	prog.all_philos_created_mutex = NULL;
-	prog.is_dead_mutex = NULL;
-	prog.print = NULL;
-	prog.is_dead = NULL;
-	return (prog);
-}
-
 int	init_prog(t_prog *prog)
 {
 	if (!prog)
@@ -75,4 +55,58 @@ int	init_prog(t_prog *prog)
 	if (!init_prog_mutexes(prog))
 		return (0);
 	return (1);
+}
+
+t_philo	*init_philos(t_prog *prog, int i)
+{
+	t_philo	*phil;
+
+	if (!prog || !prog->forks)
+		return (NULL);
+	phil = malloc(sizeof(t_philo));
+	if (phil == NULL)
+		return (printf("malloc error\n"), NULL);
+	phil->i = i + 1;
+	phil->must_eat_times = prog->must_eat_times;
+	phil->time_to_die = prog->time_to_die;
+	phil->time_to_eat = prog->time_to_eat;
+	phil->time_to_sleep = prog->time_to_sleep;
+	phil->number_of_philosophers = prog->number_of_philosophers;
+	phil->is_dead_mutex = prog->is_dead_mutex;
+	phil->is_dead = prog->is_dead;
+	phil->print = prog->print;
+	phil->all_philos_created = prog->all_philos_created;
+	phil->all_philos_created_mutex = prog->all_philos_created_mutex;
+	phil->must_eat_times_mutex = init_mutex();
+	phil->time_mutex = init_mutex();
+	if (!phil->time_mutex || !phil->must_eat_times_mutex)
+		return (free_phil(phil), NULL);
+	if (!give_forks(prog, phil, i))
+		return (free_phil(phil), NULL);
+	return (phil);
+}
+
+pthread_mutex_t	**init_forks(int num)
+{
+	pthread_mutex_t	**forks;
+	int				i;
+
+	forks = (pthread_mutex_t **)malloc(sizeof(pthread_mutex_t *) * (num + 1));
+	if (!forks)
+		return (NULL);
+	i = 0;
+	while (i <= num)
+	{
+		forks[i] = NULL;
+		i++;
+	}
+	i = 0;
+	while (i < num)
+	{
+		forks[i] = init_mutex();
+		if (forks[i] == NULL)
+			return (free_forks(forks), NULL);
+		i++;
+	}
+	return (forks);
 }

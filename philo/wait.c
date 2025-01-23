@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 10:49:57 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/23 12:09:44 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 12:52:49 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,4 +68,37 @@ int	wait_hungry(t_philo *philo)
 			return (-1);
 	}
 	return (1);
+}
+
+int	wait_result(t_philo *philo)
+{
+	void	*result;
+
+	if (!philo)
+		return (0);
+	if (pthread_join(philo->thread, &result) != 0)
+		return (0);
+	if (result == NULL)
+		return (0);
+	return (1);
+}
+
+int	wait_finishing(t_prog *prog)
+{
+	int	i;
+	int	result;
+	int	flag;
+
+	if (!prog)
+		return (0);
+	flag = 1;
+	i = 0;
+	while (prog->philos[i])
+	{
+		result = wait_result(prog->philos[i]);
+		if (!result)
+			flag = 0;
+		i++;
+	}
+	return (flag);
 }

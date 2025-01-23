@@ -6,43 +6,58 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/23 12:12:07 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/23 12:53:42 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	wait_result(t_philo *philo)
+int	main(int argc, char **argv)
 {
-	void	*result;
+	t_prog	prog;
+	int		result;
 
-	if (!philo)
-		return (0);
-	if (pthread_join(philo->thread, &result) != 0)
-		return (0);
-	if (result == NULL)
-		return (0);
-	return (1);
+	prog = new_prog();
+	if (!init_prog(&prog))
+		return (free_prog(&prog), EXIT_FAILURE);
+	if (!parse(&prog, argc, argv))
+		return (free_prog(&prog), EXIT_FAILURE);
+	if (!create_threads(&prog))
+	{
+		make_philos_dead(&prog);
+		return (free_prog(&prog), EXIT_FAILURE);
+	}
+	result = check(&prog);
+	if (result == -1)
+	{
+		make_philos_dead(&prog);
+		wait_finishing(&prog);
+		return (free_prog(&prog), EXIT_FAILURE);
+	}
+	result = wait_finishing(&prog);
+	if (!result)
+		return (free_prog(&prog), EXIT_FAILURE);
+	return (free_prog(&prog), EXIT_SUCCESS);
 }
 
-int	wait_finishing(t_prog *prog)
+t_prog	new_prog(void)
 {
-	int	i;
-	int	result;
-	int	flag;
+	t_prog	prog;
 
-	if (!prog)
-		return (0);
-	flag = 1;
-	i = 0;
-	while (prog->philos[i])
-	{
-		result = wait_result(prog->philos[i]);
-		if (!result)
-			flag = 0;
-		i++;
-	}
-	return (flag);
+	prog.number_of_philosophers = 0;
+	prog.time_to_die = 0;
+	prog.must_eat_times = -1;
+	prog.time_to_eat = 0;
+	prog.time_to_sleep = 0;
+	prog.philos = NULL;
+	prog.forks = NULL;
+	prog.start_time = 0;
+	prog.all_philos_created = NULL;
+	prog.all_philos_created_mutex = NULL;
+	prog.is_dead_mutex = NULL;
+	prog.print = NULL;
+	prog.is_dead = NULL;
+	return (prog);
 }
 
 int	create_thread(t_prog *prog, t_philo *phil)
@@ -79,34 +94,6 @@ int	create_threads(t_prog *prog)
 	*prog->all_philos_created = 1;
 	pthread_mutex_unlock(prog->all_philos_created_mutex);
 	return (1);
-}
-
-int	main(int argc, char **argv)
-{
-	t_prog	prog;
-	int		result;
-
-	prog = new_prog();
-	if (!init_prog(&prog))
-		return (free_prog(&prog), EXIT_FAILURE);
-	if (!parse(&prog, argc, argv))
-		return (free_prog(&prog), EXIT_FAILURE);
-	if (!create_threads(&prog))
-	{
-		make_philos_dead(&prog);
-		return (free_prog(&prog), EXIT_FAILURE);
-	}
-	result = check(&prog);
-	if (result == -1)
-	{
-		make_philos_dead(&prog);
-		wait_finishing(&prog);
-		return (free_prog(&prog), EXIT_FAILURE);
-	}
-	result = wait_finishing(&prog);
-	if (!result)
-		return (free_prog(&prog), EXIT_FAILURE);
-	return (free_prog(&prog), EXIT_SUCCESS);
 }
 
 //valgrind --tool=helgrind ./philo 5 800 200 200 3
