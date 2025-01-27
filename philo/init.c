@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 13:29:38 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/23 12:51:20 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/27 11:19:18 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,35 +55,6 @@ int	init_prog(t_prog *prog)
 	if (!init_prog_mutexes(prog))
 		return (0);
 	return (1);
-}
-
-t_philo	*init_philos(t_prog *prog, int i)
-{
-	t_philo	*phil;
-
-	if (!prog || !prog->forks)
-		return (NULL);
-	phil = malloc(sizeof(t_philo));
-	if (phil == NULL)
-		return (printf("malloc error\n"), NULL);
-	phil->i = i + 1;
-	phil->must_eat_times = prog->must_eat_times;
-	phil->time_to_die = prog->time_to_die;
-	phil->time_to_eat = prog->time_to_eat;
-	phil->time_to_sleep = prog->time_to_sleep;
-	phil->number_of_philosophers = prog->number_of_philosophers;
-	phil->is_dead_mutex = prog->is_dead_mutex;
-	phil->is_dead = prog->is_dead;
-	phil->print = prog->print;
-	phil->all_philos_created = prog->all_philos_created;
-	phil->all_philos_created_mutex = prog->all_philos_created_mutex;
-	phil->must_eat_times_mutex = init_mutex();
-	phil->time_mutex = init_mutex();
-	if (!phil->time_mutex || !phil->must_eat_times_mutex)
-		return (free_phil(phil), NULL);
-	if (!give_forks(prog, phil, i))
-		return (free_phil(phil), NULL);
-	return (phil);
 }
 
 pthread_mutex_t	**init_forks(int num)

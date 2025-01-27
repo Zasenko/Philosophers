@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:05 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/23 15:52:41 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/27 12:02:29 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ int	create_thread(t_prog *prog, t_philo *phil)
 	phil->start_time = prog->start_time;
 	if (pthread_create(&thread, NULL, create_philosopher, (void *)phil) != 0)
 		return (0);
+	phil->is_thread_created = 1;
 	phil->thread = thread;
 	return (1);
 }
@@ -96,5 +97,3 @@ int	create_threads(t_prog *prog)
 	pthread_mutex_unlock(prog->all_philos_created_mutex);
 	return (1);
 }
-
-//valgrind --tool=helgrind ./philo 5 800 200 200 3

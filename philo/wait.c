@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 10:49:57 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/23 12:52:49 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/27 11:57:24 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,9 +95,12 @@ int	wait_finishing(t_prog *prog)
 	i = 0;
 	while (prog->philos[i])
 	{
-		result = wait_result(prog->philos[i]);
-		if (!result)
-			flag = 0;
+		if (prog->philos[i]->is_thread_created)
+		{
+			result = wait_result(prog->philos[i]);
+			if (!result)
+				flag = 0;
+		}
 		i++;
 	}
 	return (flag);

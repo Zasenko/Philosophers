@@ -2,8 +2,8 @@ NAME = philo
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
-SRC = main.c init.c parse.c life_circle.c free.c check.c utils.c philo.c \
-wait.c forks.c time.c utils2.c free2.c
+SRC = main.c init.c parse.c life_circle.c free.c check.c utils.c thread.c \
+wait.c forks.c time.c utils2.c free2.c init_phil.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)

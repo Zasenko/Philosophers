@@ -6,7 +6,7 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 11:06:24 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/23 12:56:25 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/27 11:29:36 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef struct s_philo
 	int				*is_dead;
 	int				*all_philos_created;
 	pthread_t		thread;
+	int				is_thread_created;
 	pthread_mutex_t	*fork1;
 	pthread_mutex_t	*fork2;
 	pthread_mutex_t	*print;
@@ -63,8 +64,8 @@ typedef struct s_prog
 t_prog			new_prog(void);
 int				init_prog(t_prog *prog);
 pthread_mutex_t	*init_mutex(void);
-t_philo			*init_philos(t_prog *prog, int i);
 pthread_mutex_t	**init_forks(int num);
+t_philo			**init_philosophers(t_prog *prog);
 int				parse(t_prog *prog, int argc, char **argv);
 int				philo_circle(t_philo *philo);
 void			free_philos(t_philo **philos);
@@ -99,5 +100,4 @@ int				ft_atoi(const char *nptr);
 int				make_number(char *str);
 int				create_thread(t_prog *prog, t_philo *phil);
 int				create_threads(t_prog *prog);
-int				give_forks(t_prog *prog, t_philo *phil, int i);
 #endif

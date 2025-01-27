@@ -6,64 +6,11 @@
 /*   By: dzasenko <dzasenko@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 12:19:47 by dzasenko          #+#    #+#             */
-/*   Updated: 2025/01/23 12:50:18 by dzasenko         ###   ########.fr       */
+/*   Updated: 2025/01/27 11:25:55 by dzasenko         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	give_forks(t_prog *prog, t_philo *phil, int i)
-{
-	if (!prog || !phil)
-		return (0);
-	if (prog->number_of_philosophers == 1)
-	{
-		phil->fork1 = prog->forks[i];
-		phil->fork2 = NULL;
-	}
-	else
-	{
-		if (phil->i % 2 == 0)
-		{
-			phil->fork1 = prog->forks[i - 1];
-			phil->fork2 = prog->forks[i];
-		}
-		else
-		{
-			phil->fork1 = prog->forks[i];
-			if (i == 0)
-				phil->fork2 = prog->forks[prog->number_of_philosophers - 1];
-			else
-				phil->fork2 = prog->forks[i - 1];
-		}
-	}
-	return (1);
-}
-
-t_philo	**create_philos(t_prog *prog)
-{
-	t_philo	**philos;
-	int		i;
-
-	philos = malloc(sizeof(t_philo *) * (prog->number_of_philosophers + 1));
-	if (!philos)
-		return (printf("Malloc error\n"), NULL);
-	i = 0;
-	while (i <= prog->number_of_philosophers)
-	{
-		philos[i] = NULL;
-		i++;
-	}
-	i = 0;
-	while (i < prog->number_of_philosophers)
-	{
-		philos[i] = init_philos(prog, i);
-		if (!philos[i])
-			return (free_philos(philos), NULL);
-		i++;
-	}
-	return (philos);
-}
 
 int	parse_arg(t_prog *prog, int argc, char **argv)
 {
@@ -101,7 +48,7 @@ int	parse(t_prog *prog, int argc, char **argv)
 	prog->forks = init_forks(prog->number_of_philosophers);
 	if (!prog->forks)
 		return (0);
-	prog->philos = create_philos(prog);
+	prog->philos = init_philosophers(prog);
 	if (!prog->philos)
 		return (0);
 	return (1);
